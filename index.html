@@ -120,21 +120,19 @@
         height: 60px 
     }
 
-    /* 手機版圖示：階梯式大小 */
-        .evo-circle {
-            border-width: 1px;
-            margin-bottom: 2px;
-        }
-        .evo-circle:nth-child(1) { width: 20px !important; height: 20px !important; }
-        .evo-circle:nth-child(2) { width: 23px !important; height: 23px !important; }
-        .evo-circle:nth-child(3) { width: 26px !important; height: 26px !important; }
-        .evo-circle:nth-child(4) { width: 29px !important; height: 29px !important; }
-        .evo-circle:nth-child(5) { width: 32px !important; height: 32px !important; }
-        .evo-circle:nth-child(6) { width: 35px !important; height: 35px !important; }
-        .evo-circle:nth-child(7) { width: 38px !important; height: 38px !important; }
-        .evo-circle:nth-child(8) { width: 41px !important; height: 41px !important; }
-        .evo-circle:nth-child(9) { width: 44px !important; height: 44px !important; }
-        .evo-circle:nth-child(10){ width: 47px !important; height: 47px !important; }
+/* 3. 人物頭像：移除固定寬高，改用縮放比例 */
+    .evo-circle { 
+        /* 移除 width: 25px !important */
+        width: auto !important;   /* 撤銷固定寬度 */
+        height: auto !important;  /* 撤銷固定高度 */
+        
+        /* 使用 zoom 或 transform 來整體縮小以適應手機螢幕 */
+        transform: scale(0.5);   /* 將原本的大小縮小一半，否則手機會放不下 */
+        transform-origin: bottom; /* 縮放時以底部為準 */
+        
+        flex-shrink: 0;          /* 絕對不要擠壓頭像 */
+        aspect-ratio: 1 / 1; 
+        border-width: 1px;
     }
     /* 4. 分數框：確保不被擠壓且完整顯示 */
     .sidebar { 
@@ -383,6 +381,7 @@
 </script>
 </body>
 </html>
+
 
 
 
