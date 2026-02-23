@@ -107,20 +107,20 @@
     }
     
     #evolution-path { 
-        display: flex !important; 
-        flex-direction: row;     /* 橫向 */
-        order: -1;               
-        gap: 6px;                /* 建議稍微加大，不然大小不同會擠在一起 */
-        justify-content: center;
-        align-items: center;
-        flex-wrap: nowrap;
-    }
+    display: flex !important;
+    flex-direction: row;
+    order: -1;
+    gap: 1.5vw;              /* 間距跟著螢幕縮放 */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
 
     /* 先給一個基準尺寸（fallback） */
-    .evo-circle { 
-        width: 28px; 
-        height: 28px; 
-        flex-shrink: 0;
+    .evo-circle {
+    flex-shrink: 1;          /* 允許縮小（非常重要） */
+    aspect-ratio: 1 / 1;     /* 永遠正圓 */
+    border-radius: 50%;
     }
 
     /* 由小到大 */
@@ -368,6 +368,7 @@
 </script>
 </body>
 </html>
+
 
 
 
