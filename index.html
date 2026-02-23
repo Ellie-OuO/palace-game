@@ -109,80 +109,82 @@
         background: linear-gradient(135deg, #2b1111, #4a1c1c) !important;
     }
 
-    /* 2. 佈局容器：利用左右空間 */
+    /* 2. 佈局容器：利用垂直空間 */
     #game-wrapper {
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        padding: 5px 0; /* 減少上下內距 */
-        width: 100vw;   /* 使用視窗全寬 */
+        padding: 5px 0;
+        width: 100vw;
         height: 100vh;
     }
 
-    /* 3. 側邊欄：橫向置頂，寬度撐滿 */
+    /* 3. 側邊欄 (進化圖與分數)：置頂並橫排 */
     .sidebar {
         width: 100%;
         flex-direction: row;
-        justify-content: space-evenly; /* 均分空間 */
+        justify-content: center;
         align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
         order: -1;
-        flex-wrap: nowrap; /* 強制不換行 */
+        flex-shrink: 0;
     }
 
-    /* 4. 進化圖路徑：改用 flex 均分確保絕對等距 */
+    /* 4. 進化圖路徑：撐滿寬度並等距排列 */
     #evolution-path {
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: center;
-        flex: 3;          /* 佔據更多橫向空間 */
-        gap: 2px;         /* 設定微小固定間距 */
+        justify-content: space-evenly; /* 關鍵：讓球均勻分散，填滿左右空間 */
+        width: 100%;
         padding: 0 5px;
+        height: 50px;
     }
 
-    /* 5. 進化球：棄用 scale，直接設定大小確保等距 */
+    /* 5. 進化球：由小到大階梯式設定 (解決「一樣大」的問題) */
     .evo-circle {
-        /* 取消縮放，直接定義大小 */
-        transform: none !important; 
-        margin: 0 !important; 
-        
-        /* 讓球體根據螢幕寬度自動縮放，11顆球約佔 6vw - 8vw */
-        width: 6.5vw !important;  
-        height: 6.5vw !important;
-        max-width: 32px; /* 限制最大不要超過電腦版太多 */
-        max-height: 32px;
-        
-        border-width: 1.5px;
+        transform: none !important; /* 取消之前的縮放 */
+        margin: 0 !important;
         box-shadow: none;
-        background-size: cover;
+        flex-shrink: 0;
+        border-width: 1px;
     }
 
-    /* 6. 分數框：緊湊排列 */
+    /* 手動設定 10 個等級的大小 (由 15px 遞增至 42px) */
+    .evo-circle:nth-child(1)  { width: 14px !important; height: 14px !important; }
+    .evo-circle:nth-child(2)  { width: 17px !important; height: 17px !important; }
+    .evo-circle:nth-child(3)  { width: 20px !important; height: 20px !important; }
+    .evo-circle:nth-child(4)  { width: 23px !important; height: 23px !important; }
+    .evo-circle:nth-child(5)  { width: 26px !important; height: 26px !important; }
+    .evo-circle:nth-child(6)  { width: 29px !important; height: 29px !important; }
+    .evo-circle:nth-child(7)  { width: 32px !important; height: 32px !important; }
+    .evo-circle:nth-child(8)  { width: 35px !important; height: 35px !important; }
+    .evo-circle:nth-child(9)  { width: 38px !important; height: 38px !important; }
+    .evo-circle:nth-child(10) { width: 41px !important; height: 41px !important; }
+
+    /* 6. 分數框：橫向並排縮小 */
     .score-box {
-        margin: 0 2px;
-        padding: 4px 2px;
-        flex: 1;          /* 分數框佔據剩餘空間 */
-        max-width: 75px;  /* 限制寬度避免擠壓進化圖 */
+        margin: 0 4px;
+        padding: 2px 5px;
+        width: 75px; /* 固定寬度，以免擠到進化圖 */
         background: rgba(92, 58, 33, 0.9);
         border: 1px solid #d4af37;
+        flex-shrink: 0;
     }
+    .score-box h3 { font-size: 9px; margin-bottom: 0; }
+    .score-box span { font-size: 13px; font-weight: bold; }
 
-    .score-box h3 { font-size: 9px; margin-bottom: 0; line-height: 1; }
-    .score-box span { font-size: 13px; line-height: 1.2; }
-
-    /* 7. 遊戲畫布：解決底部問題並加大寬度 */
+    /* 7. 遊戲畫布：確保底部不被切掉 */
     #canvas-container {
-        /* 高度佔比微調，給上方留空間 */
-        height: 78vh !important; 
+        height: 70vh !important; /* 高度調降，預留更多底部空間 */
         width: auto !important;
-        aspect-ratio: 400 / 600; 
-        
-        /* 增加最大寬度限制，善用左右空間 */
-        max-width: 98%; 
-        border-width: 6px; /* 邊框稍微加回來增加質感 */
+        aspect-ratio: 400 / 600; /* 維持比例，球才不會變扁 */
+        max-width: 95%; 
+        border-width: 8px; /* 邊框稍微加厚一點增加美觀 */
+        margin-top: 5px;
     }
 
+    /* 隱藏不必要的按鈕 */
     .powerup-btn { display: none; }
 }
     </style>
@@ -412,6 +414,7 @@
 </script>
 </body>
 </html>
+
 
 
 
