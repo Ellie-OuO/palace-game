@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -92,8 +91,6 @@
     display: none;
     z-index: 6;
     filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
-    pointer-events: none;
-    touch-action: none;
 }
 
         #danger-line {
@@ -297,8 +294,6 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 
     function getNextLevel() { return Math.floor(Math.random() * 5); }
     currentPreviewLevel = getNextLevel();
-    lastX = width / 2; // 預設在中間
-    handleMove(lastX); // 讓第一顆球預先出現在中央
 
     container.addEventListener('mousemove', (e) => updatePrediction(e.clientX));
     container.addEventListener('touchmove', (e) => updatePrediction(e.touches[0].clientX));
@@ -398,8 +393,8 @@ function dropBall(targetX) {
     if (isGameOver || !canDrop) return;
     canDrop = false;
 
-    // 掉落時，只隱藏預測線，讓預覽圖留在畫面上顯示下一顆
     predictionLine.style.display = 'none';
+    hoverPreview.style.display = 'none';
 
     const r = LEVELS[currentPreviewLevel].radius;
     const scale = (r * 2) / BASE_IMG_SIZE;
@@ -420,14 +415,11 @@ function dropBall(targetX) {
     newBall.level = currentPreviewLevel;
     Composite.add(engine.world, newBall);
 
-    // 取得下一顆球的等級
     currentPreviewLevel = getNextLevel();
     
     setTimeout(() => { 
         canDrop = true; 
-        // 冷卻結束後，強制執行一次 handleMove
-        // 這樣下一顆球就會立刻出現在最後一次操作的位置
-        handleMove(lastX);
+        if (isPressing) handleMove(lastX);
     }, 500); 
 }
 
@@ -498,8 +490,6 @@ function dropBall(targetX) {
 </script>
 </body>
 </html>
-
-
 
 
 
