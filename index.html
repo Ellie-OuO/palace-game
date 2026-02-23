@@ -99,13 +99,22 @@
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
 
         @media (max-width: 700px) {
-            #game-wrapper { flex-wrap: wrap; justify-content: center; }
-            .sidebar { width: 100%;
-        flex-direction: row; /* 改成橫排 */
-        justify-content: center;
-        gap: 5px;
-        margin-bottom: 10px;
-        order: -1; /* 確保它排在最上面 */}
+    /* 1. 鎖定畫面：只在手機上生效，防止滑動與橡皮筋效果 */
+    html, body {
+        overflow: hidden;       /* 隱藏卷軸 */
+        position: fixed;        /* 釘死畫面 */
+        width: 100%;
+        height: 100%;
+        touch-action: none;     /* 禁止瀏覽器預設手勢 */
+    }
+       /* 2. 遊戲容器：改成垂直排列 (Column)，讓進化圖與分數在畫布上方 */
+    #game-wrapper {
+        flex-direction: column; /* 關鍵：從原本的 row 改成 column */
+        align-items: center;
+        padding-top: 5px;       /* 上方稍微留一點點空隙 */
+        width: 100%;
+        height: 100%;           /* 確保佔滿畫面 */
+    }
             #evolution-path { display: flex; 
         flex-wrap: wrap; /* 如果手機太窄，允許換行 */
         padding: 0 10px;}
@@ -365,5 +374,6 @@
 </script>
 </body>
 </html>
+
 
 
