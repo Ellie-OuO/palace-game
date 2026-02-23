@@ -107,23 +107,11 @@
     }
     
     #evolution-path { 
-    display: flex !important;
-    flex-direction: row;
-    order: -1;
-    width: 100%;
-    max-width: 100vw;
-
-    flex-wrap: nowrap;          /* ✅ 不能換行 */
-    overflow: hidden;           /* ✅ 不能滑動，超出直接隱藏（但我們會縮到不超出） */
-
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 8px;
-
-    transform-origin: center;   /* ✅ 從中間等比例縮 */
-    will-change: transform;
-  }
+        display: flex !important; 
+        flex-direction: row; /* 橫向排隊 */
+        order: -1;           /* 移至最上方 */
+        gap: 3px;            /* 間距 */
+    }
 }
 
     /* 先給一個基準尺寸（fallback） */
@@ -378,6 +366,7 @@
 </script>
 </body>
 </html>
+
 
 
 
