@@ -99,36 +99,83 @@
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
 
         @media (max-width: 700px) {
+    /* 1. 鎖定畫面 + 找回背景顏色 */
     html, body {
-        position: fixed;    /* 釘死畫面 */
-        overflow: hidden;   /* 隱藏卷軸 */
-        touch-action: none; /* 禁止瀏覽器預設手勢 */
+        position: fixed;        /* 釘死畫面 */
+        overflow: hidden;       /* 隱藏卷軸 */
+        touch-action: none;     /* 禁止滑動 */
+        width: 100%;
+        height: 100%;
+        /* 強制補上背景色，確保不會變白 */
+        background: linear-gradient(135deg, #2b1111, #4a1c1c) !important;
     }
-} {
-            #game-wrapper { flex-wrap: wrap; justify-content: center; }
-            .sidebar { flex-direction: row; width: 100%; justify-content: center; margin-bottom: 10px; }
-            #evolution-path { display: none; }
-            .score-box {
+
+    /* 2. 遊戲容器：改成「垂直排列」，讓左右兩側的東西跑到上下 */
+    #game-wrapper {
+        flex-direction: column; /* 關鍵：從左右排變成上下排 */
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 5px;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* 3. 側邊欄 (進化圖+分數)：改成橫排並置頂 */
+    .sidebar {
+        width: 100%;
+        flex-direction: row;    /* 變成橫向 */
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 5px;
+        order: -1;              /* 關鍵：排在最上面 */
+        flex-shrink: 0;
+        z-index: 100;
+    }
+
+    /* 4. 進化圖路徑：橫向排列 */
+    #evolution-path {
+        display: flex;          /* 顯示出來 */
+        flex-direction: row;    /* 橫排 */
+        align-items: center;
+        justify-content: center;
+        gap: 0;                 /* 球之間靠緊 */
+        padding: 0 5px;
+        height: 40px;
+    }
+
+    /* 5. 進化球：保持小到大比例，但整體縮小 */
+    .evo-circle {
+        transform: scale(0.45); /* 縮小成 45% */
+        transform-origin: center center;
+        margin: -8px;           /* 調整縮小後的間距 */
+        box-shadow: none;
+        border-width: 2px;
+    }
+
+    /* 6. 分數框：縮小並橫排 */
+    .score-box {
         margin: 0 2px;
-        padding: 2px 4px;   /* 上下內距改為 2px (原本是 10px)，大幅壓扁高度 */
-        flex: 1;            /* 維持橫向佔滿空間 */
-        border-width: 1px;  /* 邊框改細 */
+        padding: 2px 8px;
+        flex: 1;                /* 自動填滿 */
+        background: rgba(92, 58, 33, 0.9);
+        border: 1px solid #d4af37;
+        max-width: 100px;
     }
 
-    /* 新增：強制縮小「目前積分/歷史最高」這幾個字 */
     .score-box h3 {
-        font-size: 10px !important; /* 強制改為極小字體 (原本約 14px) */
-        margin-bottom: 0px;         /* 移除標題跟數字之間的空隙 */
-        line-height: 1.2;           /* 讓行距更緊湊 */
+        font-size: 10px;
+        margin-bottom: 0;
+        color: #fce2b1;
     }
 
-    /* 新增：強制縮小「數字」 */
     .score-box span {
-        font-size: 14px !important; /* 數字縮小 (原本 20px) */
-        line-height: 1.2;
+        font-size: 14px;
+        font-weight: bold;
     }
+    
+    /* 隱藏道具按鈕 (如果有) */
+    .powerup-btn { display: none; }
 }
-        }
     </style>
 </head>
 <body>
@@ -356,6 +403,7 @@
 </script>
 </body>
 </html>
+
 
 
 
