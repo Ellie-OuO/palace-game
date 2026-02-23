@@ -328,20 +328,33 @@ let lastX = width / 2;
 function handleMove(clientX) {
     if (isGameOver || !canDrop) return;
     const rect = container.getBoundingClientRect();
-    let x = clientX - rect.left;
+    
+    // --- 關鍵修正：計算縮放比例 ---
+    // 用邏輯寬度 (400) 除以 實際在網頁上顯示的寬度 (rect.width)
+    const scaleX = width / rect.width;
+    
+    // 計算出正確的畫布內座標 x
+    let x = (clientX - rect.left) * scaleX;
+    
     const r = LEVELS[currentPreviewLevel].radius;
+    // 限制 x 不得超出左右牆壁
     x = Math.max(r, Math.min(x, width - r));
-    lastX = x; // 關鍵：記錄最後移動到的位置
+    lastX = x; // 記錄最後正確的邏輯座標
 
-    predictionLine.style.left = `${x}px`;
+    // 更新虛線與圖片位置 (這裡使用百分比能最精確對應縮放後的寬度)
+    const percentX = (x / width) * 100;
+    
+    predictionLine.style.left = `${percentX}%`;
     predictionLine.style.display = 'block';
-    hoverPreview.style.left = `${x}px`;
+    
+    hoverPreview.style.left = `${percentX}%`;
     hoverPreview.style.display = 'block';
     hoverPreview.src = LEVELS[currentPreviewLevel].img;
-    hoverPreview.style.width = `${r * 2}px`;
-    hoverPreview.style.height = `${r * 2}px`;
+    
+    // 預覽圖的大小也要根據畫布縮放感來呈現
+    hoverPreview.style.width = `${(r * 2 / width) * 100}%`;
+    hoverPreview.style.height = 'auto'; 
 }
-
 // 電腦版：按住、移動、放開
 container.addEventListener('mousedown', (e) => {
     isPressing = true;
@@ -476,6 +489,7 @@ function dropBall(targetX) {
 </script>
 </body>
 </html>
+
 
 
 
