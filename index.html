@@ -266,6 +266,8 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
     Composite.add(engine.world, [ground, leftWall, rightWall]);
 
     Render.run(render);
+    render.canvas.style.width = "100%";
+    render.canvas.style.height = "100%";
     const runner = Runner.create();
     Runner.run(runner, engine);
 
@@ -425,6 +427,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
