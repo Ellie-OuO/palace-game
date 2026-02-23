@@ -107,26 +107,22 @@
 <body>
 
 <div id="game-wrapper">
-    <div class="sidebar" id="evolution-path"></div>
+    <div id="evolution-path"></div>
 
     <div id="canvas-container">
         <img id="hover-preview" src="" alt="preview">
         <div id="prediction-line"></div>
-        
         <div id="danger-line"></div>
         <div id="game-over-screen">
             <h1>勝敗乃兵家常事</h1>
-            <p style="margin-bottom: 20px;">最終積分: <span id="final-score">0</span></p>
+            <p>最終積分: <span id="final-score">0</span></p>
             <button id="restart-btn" onclick="location.reload()">重新挑戰</button>
         </div>
     </div>
 
-    <div class="sidebar">
+    <div class="sidebar-right">
         <div class="score-box"><h3>目前積分</h3><span id="current-score">0</span></div>
         <div class="score-box"><h3>歷史最高</h3><span id="high-score">0</span></div>
-        <!-- <button class="powerup-btn" onclick="usePowerup('wildcard')">萬用</button> -->
-        <!-- <button class="powerup-btn" onclick="usePowerup('shuffle')">翻轉</button> -->
-        <!-- <button class="powerup-btn" onclick="usePowerup('eliminate')">消除</button> -->
     </div>
 </div>
 
@@ -189,16 +185,14 @@
         evoPath.appendChild(circle);
     });
 
-    // --- 2. 核心機制：預覽與掉落 ---
+// --- 2. 核心機制：預覽與掉落 (雙棲優化版) ---
     const predictionLine = document.getElementById('prediction-line');
-    const hoverPreview = document.getElementById('hover-preview'); // 取得預覽圖元素
+    const hoverPreview = document.getElementById('hover-preview'); 
 
     function getNextLevel() { return Math.floor(Math.random() * 5); }
     currentPreviewLevel = getNextLevel();
 
-    container.addEventListener('mousemove', (e) => updatePrediction(e.clientX));
-    container.addEventListener('touchmove', (e) => updatePrediction(e.touches[0].clientX));
-
+    // 這裡是您原本的 updatePrediction，我幫您升級了內部的 RWD 寬度判定
     function updatePrediction(clientX) {
         if (isGameOver || !canDrop) {
             predictionLine.style.display = 'none';
@@ -208,7 +202,37 @@
         const rect = container.getBoundingClientRect();
         let x = clientX - rect.left;
         const r = LEVELS[currentPreviewLevel].radius;
-        x = Math.max(r, Math.min(x, width - r)); 
+        
+        // 關鍵：動態抓取畫布寬度，電腦版跟手機版就不會跑位
+        const currentWidth = container.clientWidth;
+        x = Math.max(r, Math.min(x, currentWidth - r)); 
+
+        predictionLine.style.left = `${x}px`;
+        predictionLine.style.display = 'block';
+
+        hoverPreview.src = LEVELS[currentPreviewLevel].img;
+        hoverPreview.style.width = `${r * 2}px`;
+        hoverPreview.style.height = `${r * 2}px`;
+        hoverPreview.style.left = `${x}px`;
+        hoverPreview.style.display = 'block';
+    }
+
+    // --- 事件監聽：這裡取代了原本只有兩行的監聽器 ---
+
+    // [電腦版] 滑鼠移動更新預覽、點擊掉落
+    container.addEventListener('mousemove', (e) => updatePrediction(e.clientX));
+    container.addEventListener('mousedown', (e) => dropBall(e.clientX));
+
+    // [手機版] 觸控滑動更新預覽 (手指移動時，預覽圖會跟著走)
+    container.addEventListener('touchmove', (e) => {
+        if (e.cancelable) e.preventDefault(); // 防止手機畫面跳動
+        updatePrediction(e.touches[0].clientX);
+    }, { passive: false });
+
+    // [手機版] 手指放開才掉落 (這才是最正宗的手遊玩法)
+    container.addEventListener('touchend', (e) => {
+        dropBall(e.changedTouches[0].clientX);
+    });
 
         // 更新虛線位置
         predictionLine.style.left = `${x}px`;
@@ -329,3 +353,4 @@
 </script>
 </body>
 </html>
+
