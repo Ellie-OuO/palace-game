@@ -99,81 +99,84 @@
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
 
         @media (max-width: 700px) {
-    /* 1. 鎖定畫面 + 找回背景顏色 */
+    /* 1. 鎖定畫面 + 背景顏色 */
     html, body {
-        position: fixed;        /* 釘死畫面 */
-        overflow: hidden;       /* 隱藏卷軸 */
-        touch-action: none;     /* 禁止滑動 */
+        position: fixed;
+        overflow: hidden;
+        touch-action: none;
         width: 100%;
         height: 100%;
-        /* 強制補上背景色，確保不會變白 */
         background: linear-gradient(135deg, #2b1111, #4a1c1c) !important;
     }
 
-    /* 2. 遊戲容器：改成「垂直排列」，讓左右兩側的東西跑到上下 */
+    /* 2. 遊戲容器：垂直排列 */
     #game-wrapper {
-        flex-direction: column; /* 關鍵：從左右排變成上下排 */
+        flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        padding-top: 5px;
+        justify-content: flex-start; /* 從頂部開始排 */
+        padding-top: 10px;           /* 頂部留一點空隙 */
         width: 100%;
         height: 100%;
     }
 
-    /* 3. 側邊欄 (進化圖+分數)：改成橫排並置頂 */
+    /* 3. 側邊欄 (進化圖+分數)：置頂 */
     .sidebar {
         width: 100%;
-        flex-direction: row;    /* 變成橫向 */
+        flex-direction: row;
         justify-content: center;
         align-items: center;
         margin-bottom: 5px;
-        order: -1;              /* 關鍵：排在最上面 */
+        order: -1;
         flex-shrink: 0;
         z-index: 100;
+        height: auto;
     }
 
-    /* 4. 進化圖路徑：橫向排列 */
+    /* 4. 進化圖路徑：更緊湊 */
     #evolution-path {
-        display: flex;          /* 顯示出來 */
-        flex-direction: row;    /* 橫排 */
+        display: flex;
+        flex-direction: row;
         align-items: center;
         justify-content: center;
-        gap: 0;                 /* 球之間靠緊 */
-        padding: 0 5px;
+        padding: 0;
+        gap: 0;           /* 移除 gap，完全靠 margin 控制 */
         height: 40px;
     }
 
-    /* 5. 進化球：保持小到大比例，但整體縮小 */
+    /* 5. 進化球：修正間距問題 */
     .evo-circle {
-        transform: scale(0.45); /* 縮小成 45% */
+        transform: scale(0.45);
         transform-origin: center center;
-        margin: -8px;           /* 調整縮小後的間距 */
+        /* 重點修改：用更大的負 margin 把球拉近 */
+        margin: 0 -13px !important; 
         box-shadow: none;
         border-width: 2px;
     }
 
-    /* 6. 分數框：縮小並橫排 */
+    /* 6. 分數框 */
     .score-box {
-        margin: 0 2px;
+        margin: 0 5px; /* 稍微拉開跟進化球的距離 */
         padding: 2px 8px;
-        flex: 1;                /* 自動填滿 */
+        flex: none;    /* 不再自動拉伸，固定寬度比較好看 */
+        width: 80px;   /* 固定寬度 */
         background: rgba(92, 58, 33, 0.9);
         border: 1px solid #d4af37;
-        max-width: 100px;
     }
 
-    .score-box h3 {
-        font-size: 10px;
-        margin-bottom: 0;
-        color: #fce2b1;
+    .score-box h3 { font-size: 10px; margin-bottom: 0; color: #fce2b1; }
+    .score-box span { font-size: 14px; font-weight: bold; }
+
+    /* 7. 遊戲畫布：修正底部不見的問題 */
+    #canvas-container {
+        /* 重點修改：高度改為視窗高度的 75%，確保能塞進畫面 */
+        height: 75vh !important; 
+        width: auto !important;   /* 寬度自動，保持比例 */
+        aspect-ratio: 400 / 600;  /* 強制維持 4:6 的長寬比，球才不會變形 */
+        
+        border-width: 5px;        /* 手機版邊框改細一點，節省空間 */
+        max-width: 95%;           /* 確保左右留一點邊 */
     }
 
-    .score-box span {
-        font-size: 14px;
-        font-weight: bold;
-    }
-    
-    /* 隱藏道具按鈕 (如果有) */
     .powerup-btn { display: none; }
 }
     </style>
@@ -403,6 +406,7 @@
 </script>
 </body>
 </html>
+
 
 
 
