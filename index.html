@@ -323,6 +323,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 
     function getNextLevel() { return Math.floor(Math.random() * 5); }
     currentPreviewLevel = getNextLevel();
+    setTimeout(() => { handleMove(null); }, 100);
 
     container.addEventListener('mousemove', (e) => updatePrediction(e.clientX));
     container.addEventListener('touchmove', (e) => updatePrediction(e.touches[0].clientX));
@@ -355,79 +356,60 @@ let isPressing = false;
 let lastX = width / 2;
 
 // 統一的移動處理：更新預覽位置並記錄座標
-function handleMove(clientX) {
-    if (isGameOver || !canDrop) return;
+function handleMove(inputX) {
+    if (isGameOver) return;
+    
+    // 取得容器位置與縮放比例
     const rect = container.getBoundingClientRect();
-    
-    // --- 關鍵修正：計算縮放比例 ---
-    // 用邏輯寬度 (400) 除以 實際在網頁上顯示的寬度 (rect.width)
     const scaleX = width / rect.width;
-    
-    // 計算出正確的畫布內座標 x
-    let x = (clientX - rect.left) * scaleX;
-    
+
+    let x;
+    // 判斷邏輯：是有手指在按？還是系統自動補位？
+    if (inputX !== null && inputX !== undefined) {
+        // 手指/滑鼠操作中：計算當前位置
+        x = (inputX - rect.left) * scaleX;
+    } else {
+        // 系統自動補位：使用最後一次紀錄的位置 (lastX)
+        x = lastX;
+    }
+
     const r = LEVELS[currentPreviewLevel].radius;
     // 限制 x 不得超出左右牆壁
     x = Math.max(r, Math.min(x, width - r));
-    lastX = x; // 記錄最後正確的邏輯座標
+    
+    // 更新 lastX，這樣下次自動補位就會在同一個地方
+    lastX = x; 
 
-    // 更新虛線與圖片位置 (這裡使用百分比能最精確對應縮放後的寬度)
+    // 計算百分比位置
     const percentX = (x / width) * 100;
     
+    // 1. 更新虛線 (只有按住時才顯示，避免自動補位時出現一條線很怪)
     predictionLine.style.left = `${percentX}%`;
-    predictionLine.style.display = 'block';
+    predictionLine.style.display = isPressing ? 'block' : 'none';
     
+    // 2. 更新預覽球 (關鍵：不管有沒有按住，都要顯示！)
     hoverPreview.style.left = `${percentX}%`;
-    hoverPreview.style.display = 'block';
+    hoverPreview.style.display = 'block'; // 強制顯示
     hoverPreview.src = LEVELS[currentPreviewLevel].img;
     
-    // 預覽圖的大小也要根據畫布縮放感來呈現
+    // 根據畫布比例設定預覽圖大小
     hoverPreview.style.width = `${(r * 2 / width) * 100}%`;
     hoverPreview.style.height = 'auto'; 
 }
-// 電腦版：按住、移動、放開
-container.addEventListener('mousedown', (e) => {
-    isPressing = true;
-    handleMove(e.clientX);
-});
-window.addEventListener('mousemove', (e) => {
-    if (isPressing) handleMove(e.clientX);
-});
-window.addEventListener('mouseup', (e) => {
-    if (isPressing) {
-        isPressing = false;
-        dropBall(lastX); // 放開滑鼠才掉落
-    }
-});
 
-// 手機版：按下、拖移、離開
-container.addEventListener('touchstart', (e) => {
-    e.preventDefault(); 
-    isPressing = true;
-    handleMove(e.touches[0].clientX);
-}, { passive: false });
-container.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if (isPressing) handleMove(e.touches[0].clientX);
-}, { passive: false });
-container.addEventListener('touchend', (e) => {
-    if (isPressing) {
-        isPressing = false;
-        dropBall(lastX); // 手指離開才掉落
-    }
-});
-
-// 重新定義 dropBall 接收 targetX
+/* --- 請替換 dropBall 函式 --- */
 function dropBall(targetX) {
     if (isGameOver || !canDrop) return;
     canDrop = false;
 
+    // 掉落瞬間：暫時隱藏預覽，0.5秒後再出現
     predictionLine.style.display = 'none';
     hoverPreview.style.display = 'none';
 
     const r = LEVELS[currentPreviewLevel].radius;
     const scale = (r * 2) / BASE_IMG_SIZE;
 
+    // --- 這裡產生球體的物理設定完全沒變 ---
     const newBall = Bodies.circle(targetX, 50, r, {
         restitution: 0.2, 
         friction: 0.8, 
@@ -444,11 +426,17 @@ function dropBall(targetX) {
     newBall.level = currentPreviewLevel;
     Composite.add(engine.world, newBall);
 
+    // 隨機產生下一顆
     currentPreviewLevel = getNextLevel();
     
+    // --- 關鍵修改：0.5秒後的行為 ---
     setTimeout(() => { 
         canDrop = true; 
-        if (isPressing) handleMove(lastX);
+        
+        // 呼叫 handleMove(null)
+        // 意思就是：「即使沒人按螢幕，也請幫我在上次的位置顯示下一顆球」
+        handleMove(null); 
+        
     }, 500); 
 }
 
@@ -519,6 +507,7 @@ function dropBall(targetX) {
 </script>
 </body>
 </html>
+
 
 
 
