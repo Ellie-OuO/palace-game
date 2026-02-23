@@ -260,10 +260,7 @@
     const BASE_IMG_SIZE = 200; 
     // --- 0. 圖片預先載入 (解決掉落卡頓的關鍵) ---
     // 這會強迫瀏覽器先把圖片讀進快取，不用等到掉落時才讀
-    LEVELS.forEach(lvl => {
-        const img = new Image();
-        img.src = lvl.img;
-    });
+    
     const LEVELS = [
         { radius: 15, img: 'images/level1.png' },
         { radius: 22, img: 'images/level2.png' },
@@ -276,6 +273,10 @@
         { radius: 71, img: 'images/level9.png' },
         { radius: 78, img: 'images/level10.png' }
     ];
+    LEVELS.forEach(lvl => {
+        const img = new Image();
+        img.src = lvl.img;
+    });
 const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bodies = Matter.Bodies, Composite = Matter.Composite, Events = Matter.Events;
 
     const engine = Engine.create();
@@ -531,6 +532,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
