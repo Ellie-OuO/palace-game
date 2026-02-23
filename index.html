@@ -3,185 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>後宮合成大戰 (Palace Suika)</title>
+    <title>甄嬛合成大賽 - 高清修復版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
-        /* CSS Reset 確保全螢幕鎖定 */
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background: linear-gradient(135deg, #2b1111, #4a1c1c);
-            font-family: "Microsoft JhengHei", sans-serif;
-            color: #fce2b1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* 嚴格防止手機網頁晃動 */
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
+            background: #2b1111;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden; touch-action: none;
         }
-
-        #game-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            padding: 10px;
-        }
-
-        /* 側邊欄：進化路徑 */
-        .sidebar { 
-            width: 80px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 10px; 
-            z-index: 10; 
-        }
-
-        .evo-circle {
-            border-radius: 50%;
-            border: 2px solid #fce2b1;
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
         #canvas-container {
-            position: relative;
-            width: 360px; 
-            height: 540px; 
-            background: linear-gradient(to bottom, #ffe8c3 0%, #f7d299 100%);
-            border: 10px solid #5c3a21;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.2);
-            overflow: hidden;
-            touch-action: none;
+            position: relative; width: 400px; height: 600px;
+            background: #f7d299; border: 10px solid #5c3a21; border-radius: 10px;
         }
-        
-        canvas { display: block; width: 100%; height: 100%; }
-
-        /* 分數顯示 */
-        .score-box { 
-            text-align: center; 
-            background: rgba(92, 58, 33, 0.9); 
-            padding: 8px; 
-            border-radius: 8px; 
-            border: 1px solid #d4af37; 
-            width: 100%; 
-        }
-        .score-box h3 { font-size: 12px; margin-bottom: 2px; color: #fce2b1; }
-        .score-box span { font-size: 18px; font-weight: bold; color: #fff; }
-
-        #prediction-line {
-            position: absolute; top: 0; width: 2px; height: 100%;
-            background-image: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.8) 50%);
-            background-size: 100% 15px; pointer-events: none; display: none; z-index: 5;
-        }
-
         #hover-preview {
-            position: absolute;
-            top: 5px; 
-            transform: translateX(-50%); 
-            pointer-events: none;
-            display: none;
-            z-index: 6;
-            filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.3));
+            position: absolute; top: 10px; transform: translateX(-50%);
+            pointer-events: none; border-radius: 50%; border: 2px solid #fff;
+            display: none; z-index: 10; object-fit: cover;
         }
-
         #danger-line {
-            position: absolute; top: 80px; left: 0; width: 100%; height: 2px;
-            background-color: rgba(255, 0, 0, 0.5); border-top: 1px dashed red; pointer-events: none; z-index: 4;
+            position: absolute; top: 100px; width: 100%; height: 2px;
+            background: rgba(255, 0, 0, 0.6); border-top: 1px dashed red;
         }
-
-        /* 遊戲結束畫面 */
-        #game-over-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: none; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 20;
-        }
-
-        /* 手機版 RWD 適配：確保看到路徑圖與分數 */
-        @media (max-width: 700px) {
-            #game-wrapper { gap: 5px; flex-direction: row; }
-            
-            #canvas-container {
-                width: 70vw; 
-                height: 105vw; 
-                max-height: 65vh;
-            }
-
-            #evolution-path {
-                position: absolute;
-                left: 5px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 35px;
-                gap: 2px;
-            }
-            .evo-circle { width: 30px !important; height: 30px !important; border-width: 1px; }
-
-            .sidebar:last-child {
-                position: absolute;
-                right: 5px;
-                top: 10px;
-                width: 65px;
-                gap: 5px;
-            }
-            .score-box { padding: 4px; }
-            .score-box h3 { font-size: 10px; }
-            .score-box span { font-size: 14px; }
+        #game-over {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.8); display: none; flex-direction: column;
+            justify-content: center; align-items: center; color: white; z-index: 100;
         }
     </style>
 </head>
 <body>
 
-<div id="game-wrapper">
-    <div class="sidebar" id="evolution-path"></div>
-
-    <div id="canvas-container">
-        <img id="hover-preview" src="" alt="preview">
-        <div id="prediction-line"></div>
-        <div id="danger-line"></div>
-        <div id="game-over-screen">
-            <h1 style="color: #ff4d4d; font-size: 24px; margin-bottom: 10px;">勝敗乃兵家常事</h1>
-            <p style="margin-bottom: 20px;">最終積分: <span id="final-score">0</span></p>
-            <button style="padding: 10px 20px; font-size: 16px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold;" onclick="location.reload()">重新挑戰</button>
-        </div>
-    </div>
-
-    <div class="sidebar">
-        <div class="score-box"><h3>目前積分</h3><span id="current-score">0</span></div>
-        <div class="score-box"><h3>歷史最高</h3><span id="high-score">0</span></div>
+<div id="canvas-container">
+    <img id="hover-preview" src="">
+    <div id="danger-line"></div>
+    <div id="game-over">
+        <h1>勝敗乃兵家常事</h1>
+        <button onclick="location.reload()" style="padding:10px 20px; margin-top:20px; cursor:pointer;">重新開始</button>
     </div>
 </div>
 
 <script>
-    // 1. 嚴格阻斷手機瀏覽器預設滑動行為
-    document.addEventListener('touchmove', function(e) {
-        e.preventDefault();
-    }, { passive: false });
-
-    // 2. 遊戲資料
-    const BASE_IMG_SIZE = 200; 
     const LEVELS = [
-        { radius: 12, img: 'images/level1.png' },
-        { radius: 18, img: 'images/level2.png' },
-        { radius: 25, img: 'images/level3.png' },
-        { radius: 32, img: 'images/level4.png' },
-        { radius: 39, img: 'images/level5.png' },
-        { radius: 46, img: 'images/level6.png' },
-        { radius: 53, img: 'images/level7.png' },
-        { radius: 60, img: 'images/level8.png' },
-        { radius: 67, img: 'images/level9.png' },
-        { radius: 75, img: 'images/level10.png' }
+        { radius: 20, img: 'images/level1.png' },
+        { radius: 30, img: 'images/level2.png' },
+        { radius: 40, img: 'images/level3.png' },
+        { radius: 50, img: 'images/level4.png' },
+        { radius: 60, img: 'images/level5.png' },
+        { radius: 75, img: 'images/level6.png' },
+        { radius: 90, img: 'images/level7.png' },
+        { radius: 105, img: 'images/level8.png' },
+        { radius: 120, img: 'images/level9.png' },
+        { radius: 140, img: 'images/level10.png' }
     ];
 
     const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
@@ -189,88 +62,96 @@
     const container = document.getElementById('canvas-container');
     const width = 400; const height = 600;
 
+    // 預載圖片以防止渲染閃爍
+    const imgObjects = LEVELS.map(level => {
+        const img = new Image();
+        img.src = level.img;
+        return img;
+    });
+
     const render = Render.create({
         element: container,
         engine: engine,
-        options: { width, height, wireframes: false, background: 'transparent' }
+        options: {
+            width: width, height: height,
+            wireframes: false,
+            background: 'transparent',
+            pixelRatio: window.devicePixelRatio // 關鍵：解決手機畫質模糊
+        }
     });
 
-    // 牆壁設定
-    const wallOptions = { isStatic: true, render: { fillStyle: '#5c3a21' } };
+    // 自定義渲染邏輯：解決圖片變形問題
+    render.canvas.getContext('2d').imageSmoothingEnabled = true;
+    render.canvas.getContext('2d').imageSmoothingQuality = 'high';
+
+    const wallOptions = { isStatic: true, render: { visible: false } };
     Composite.add(engine.world, [
-        Bodies.rectangle(width/2, height + 25, width + 100, 50, wallOptions), // 地板
-        Bodies.rectangle(-25, height/2, 50, height + 100, wallOptions),       // 左牆
-        Bodies.rectangle(width + 25, height/2, 50, height + 100, wallOptions)  // 右牆
+        Bodies.rectangle(width/2, height + 20, width, 40, wallOptions),
+        Bodies.rectangle(-20, height/2, 40, height, wallOptions),
+        Bodies.rectangle(width + 20, height/2, 40, height, wallOptions)
     ]);
 
     Render.run(render);
     Runner.run(Runner.create(), engine);
 
-    let score = 0; 
-    let highScore = localStorage.getItem('palaceHighScore') || 0;
-    document.getElementById('high-score').innerText = highScore;
-    let isGameOver = false; let gameOverTimer = 0; let currentPreviewLevel = 0; let canDrop = true;
+    let currentLevel = 0;
+    let canDrop = true;
+    let isGameOver = false;
 
-    // 生成左側 UI
-    const evoPathUI = document.getElementById('evolution-path');
-    LEVELS.forEach(lvl => {
-        const div = document.createElement('div');
-        div.className = 'evo-circle';
-        div.style.width = '40px'; div.style.height = '40px';
-        div.style.backgroundImage = `url(${lvl.img})`;
-        evoPathUI.appendChild(div);
-    });
-
-    const predictionLine = document.getElementById('prediction-line');
     const hoverPreview = document.getElementById('hover-preview');
 
-    function getNextLevel() { return Math.floor(Math.random() * 4); }
-    currentPreviewLevel = getNextLevel();
-
-    // 核心邏輯：處理滑動與點擊座標轉換
-    function getX(clientX) {
+    function updatePos(clientX) {
+        if (!canDrop || isGameOver) return;
         const rect = container.getBoundingClientRect();
-        const scale = width / rect.width;
-        let x = (clientX - rect.left) * scale;
-        const r = LEVELS[currentPreviewLevel].radius;
-        return Math.max(r, Math.min(x, width - r));
-    }
-
-    function updateUI(clientX) {
-        if (isGameOver || !canDrop) return;
-        const x = getX(clientX);
-        predictionLine.style.left = `${(x / width) * 100}%`;
-        predictionLine.style.display = 'block';
-        hoverPreview.src = LEVELS[currentPreviewLevel].img;
-        hoverPreview.style.width = `${(LEVELS[currentPreviewLevel].radius * 2 / width) * 100}%`;
-        hoverPreview.style.left = `${(x / width) * 100}%`;
+        let x = clientX - rect.left;
+        const r = LEVELS[currentLevel].radius;
+        x = Math.max(r, Math.min(x, width - r));
+        
+        hoverPreview.src = LEVELS[currentLevel].img;
+        hoverPreview.style.width = `${r * 2}px`;
+        hoverPreview.style.height = `${r * 2}px`;
+        hoverPreview.style.left = `${x}px`;
         hoverPreview.style.display = 'block';
     }
 
-    container.addEventListener('mousemove', (e) => updateUI(e.clientX));
-    container.addEventListener('touchmove', (e) => updateUI(e.touches[0].clientX));
+    container.addEventListener('mousemove', (e) => updatePos(e.clientX));
+    container.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        updatePos(e.touches[0].clientX);
+    }, { passive: false });
 
     function drop(clientX) {
-        if (isGameOver || !canDrop) return;
+        if (!canDrop || isGameOver) return;
         canDrop = false;
-        const x = getX(clientX);
-        const r = LEVELS[currentPreviewLevel].radius;
-        const scale = (r * 2) / BASE_IMG_SIZE;
+        hoverPreview.style.display = 'none';
 
-        const ball = Bodies.circle(x, 40, r, {
-            restitution: 0.3, friction: 0.5,
-            render: { sprite: { texture: LEVELS[currentPreviewLevel].img, xScale: scale, yScale: scale } },
-            label: 'char'
+        const rect = container.getBoundingClientRect();
+        let x = clientX - rect.left;
+        const r = LEVELS[currentLevel].radius;
+        x = Math.max(r, Math.min(x, width - r));
+
+        const ball = Bodies.circle(x, 50, r, {
+            restitution: 0.2,
+            friction: 0.1,
+            render: {
+                sprite: { texture: LEVELS[currentLevel].img, xScale: (r*2)/200, yScale: (r*2)/200 }
+            }
         });
-        ball.level = currentPreviewLevel;
+        ball.level = currentLevel;
+        ball.label = 'char';
         Composite.add(engine.world, ball);
 
-        currentPreviewLevel = getNextLevel();
-        setTimeout(() => { canDrop = true; updateUI(clientX); }, 600);
+        setTimeout(() => {
+            currentLevel = Math.floor(Math.random() * 4);
+            canDrop = true;
+        }, 800);
     }
 
     container.addEventListener('mousedown', (e) => drop(e.clientX));
-    container.addEventListener('touchstart', (e) => drop(e.touches[0].clientX));
+    container.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        drop(e.touches[0].clientX);
+    }, { passive: false });
 
     // 合成邏輯
     Events.on(engine, 'collisionStart', (event) => {
@@ -278,48 +159,33 @@
             const { bodyA, bodyB } = pair;
             if (bodyA.label === 'char' && bodyB.label === 'char' && bodyA.level === bodyB.level) {
                 if (bodyA.isMerging || bodyB.isMerging) return;
-                bodyA.isMerging = bodyB.isMerging = true;
-
                 const nextLvl = bodyA.level + 1;
                 if (nextLvl < LEVELS.length) {
+                    bodyA.isMerging = bodyB.isMerging = true;
                     const midX = (bodyA.position.x + bodyB.position.x) / 2;
                     const midY = (bodyA.position.y + bodyB.position.y) / 2;
                     Composite.remove(engine.world, [bodyA, bodyB]);
                     
-                    score += (nextLvl * 10);
-                    document.getElementById('current-score').innerText = score;
-                    if (score > highScore) {
-                        highScore = score;
-                        localStorage.setItem('palaceHighScore', highScore);
-                        document.getElementById('high-score').innerText = highScore;
-                    }
-
-                    const r = LEVELS[nextLvl].radius;
-                    const ball = Bodies.circle(midX, midY, r, {
-                        render: { sprite: { texture: LEVELS[nextLvl].img, xScale: (r*2)/BASE_IMG_SIZE, yScale: (r*2)/BASE_IMG_SIZE } },
-                        label: 'char'
+                    const newBall = Bodies.circle(midX, midY, LEVELS[nextLvl].radius, {
+                        render: { sprite: { texture: LEVELS[nextLvl].img, xScale: (LEVELS[nextLvl].radius*2)/200, yScale: (LEVELS[nextLvl].radius*2)/200 } }
                     });
-                    ball.level = nextLvl;
-                    Composite.add(engine.world, ball);
+                    newBall.level = nextLvl;
+                    newBall.label = 'char';
+                    Composite.add(engine.world, newBall);
                 }
             }
         });
     });
 
-    // 死亡判定
+    // 修正後的遊戲結束判定
     Events.on(engine, 'beforeUpdate', () => {
-        if (isGameOver) return;
-        let danger = false;
-        Composite.allBodies(engine.world).forEach(b => {
-            if (b.label === 'char' && b.position.y < 100 && b.velocity.y < 0.1) danger = true;
-        });
-        if (danger) {
-            if (++gameOverTimer > 180) {
+        const bodies = Composite.allBodies(engine.world);
+        bodies.forEach(body => {
+            if (body.label === 'char' && body.position.y < 100 && body.position.y > 60 && Math.abs(body.velocity.y) < 0.1) {
                 isGameOver = true;
-                document.getElementById('final-score').innerText = score;
-                document.getElementById('game-over-screen').style.display = 'flex';
+                document.getElementById('game-over').style.display = 'flex';
             }
-        } else gameOverTimer = 0;
+        });
     });
 </script>
 </body>
