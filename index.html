@@ -133,16 +133,16 @@
             background: linear-gradient(135deg, #2b1111, #4a1c1c) !important;
         }
 
-        /* 2. 佈局容器：【微調】減少頂部留白，收緊版面 */
+        /* 2. 佈局容器 */
         #game-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             
-            /* 從 80px 改為 50px，減少上方空白 */
-            padding-top: 50px; 
-            padding-bottom: 0;
+            /* 稍微減少頂部留白 (50px -> 45px)，爭取一點下方空間 */
+            padding-top: 45px; 
+            padding-bottom: 10px; /* 底部留白，確保邊框不會貼底 */
             width: 100%;
             height: 100%;
         }
@@ -154,31 +154,39 @@
             flex-direction: row;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
             flex-shrink: 0;
             z-index: 20;
             margin: 0;
         }
 
-        /* 4. 進化圖 (Order 1) */
+        /* 4. 進化圖 (Order 1) - 【強制不換行】 */
         #evolution-path {
             order: 1; 
-            gap: 4px; /* 間距稍微縮小，讓放大的球塞得下 */
-            padding: 2px 5px;
+            /* 關鍵：強制不換行，球多了就自動擠緊一點 */
+            flex-wrap: nowrap !important; 
+            
+            /* 撐開寬度，利用左右空間 */
+            width: 98% !important; 
+            
+            /* 極小的間距，讓球能塞得下 */
+            gap: 1px; 
+            justify-content: space-evenly; /* 平均分配空間 */
+            
+            padding: 2px 0;
             height: auto;
-            margin-bottom: 2px; /* 收緊與分數框的距離 */
+            margin-bottom: 2px;
         }
 
-        /* 5. 進化球大小：【放大 25%】 */
+        /* 5. 進化球大小：保持您喜歡的大尺寸 */
         .evo-circle {
             transform: none !important;
             margin: 0 !important;
             box-shadow: none;
-            flex-shrink: 0;
+            flex-shrink: 0; /* 防止球變形扁掉 */
             border-width: 1px;
             background-size: cover;
         }
-        /* 數值已重新計算，約為原本的 1.25 倍 */
+        /* 數值維持放大版 */
         .evo-circle:nth-child(1)  { width: 20px !important; height: 20px !important; }
         .evo-circle:nth-child(2)  { width: 22px !important; height: 22px !important; }
         .evo-circle:nth-child(3)  { width: 25px !important; height: 25px !important; }
@@ -190,15 +198,16 @@
         .evo-circle:nth-child(9)  { width: 46px !important; height: 46px !important; }
         .evo-circle:nth-child(10) { width: 50px !important; height: 50px !important; }
 
-        /* 6. 分數框 (Order 2) - 保持原樣 */
+        /* 6. 分數框 (Order 2) */
         .sidebar:last-child {
              order: 2; 
-             margin-bottom: 5px; /* 收緊與遊戲畫布的距離 */
+             margin-bottom: 8px; /* 與遊戲畫布保持距離 */
+             flex-wrap: wrap; /* 分數框可以換行沒關係，但這裡通常不會 */
         }
 
         .score-box {
             margin: 0 5px;
-            padding: 3px 12px;
+            padding: 2px 12px;
             width: auto;
             min-width: 80px;
             background: rgba(92, 58, 33, 0.95);
@@ -207,22 +216,25 @@
         .score-box h3 { font-size: 11px; margin-bottom: 2px; }
         .score-box span { font-size: 18px; font-weight: bold; }
 
-        /* 7. 遊戲畫布 (Order 3) */
+        /* 7. 遊戲畫布 (Order 3) - 【修正底部消失問題】 */
         #canvas-container {
             order: 3; 
             
-            /* 【微調】高度稍微加高到 65vh */
-            height: 65vh !important; 
-            width: auto !important; 
+            /* 從 65vh 降回 60vh，確保底部邊框能露出來 */
+            /* 60vh 對於大多數手機來說已經很長了 */
+            height: 60vh !important; 
             
-            /* 依然嚴格遵守比例，球體不變形 */
+            width: auto !important; 
             aspect-ratio: 400 / 600; 
             
             max-width: 95%; 
             
             border-width: 8px;
-            box-sizing: border-box;
+            box-sizing: border-box; /* 確保邊框算在高度內 */
             margin-top: 0;
+            
+            /* 加上底部陰影讓邊框更明顯 */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
         }
 
         /* 隱藏不必要的按鈕 */
@@ -534,6 +546,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
