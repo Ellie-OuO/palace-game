@@ -283,8 +283,50 @@
     function getNextLevel() { return Math.floor(Math.random() * 5); }
     currentPreviewLevel = getNextLevel();
 
-    container.addEventListener('mousemove', (e) => updatePrediction(e.clientX));
-    container.addEventListener('touchmove', (e) => updatePrediction(e.touches[0].clientX));
+// ==========================================
+    //       3. 事件監聽 (電腦與手機雙用版)
+    // ==========================================
+
+    // --- A. 電腦版 (滑鼠 Mouse) ---
+    // 保持原本邏輯：滑鼠移動就瞄準，點擊左鍵就掉落
+    container.addEventListener('mousemove', (e) => {
+        updatePrediction(e.clientX);
+    });
+    container.addEventListener('mousedown', (e) => {
+        dropBall(e.clientX); 
+    });
+
+    // --- B. 手機版 (觸控 Touch) ---
+    // 改良邏輯：手指按住拖曳瞄準，"放開手指" 才掉落
+    
+    // 1. 手指按下去：開始瞄準 (不掉落)
+    container.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // 防止畫面跟著捲動
+        const clientX = e.touches[0].clientX;
+        updatePrediction(clientX);
+    }, { passive: false });
+
+    // 2. 手指拖曳：持續瞄準
+    container.addEventListener('touchmove', (e) => {
+        e.preventDefault(); // 防止畫面跟著捲動
+        const clientX = e.touches[0].clientX;
+        updatePrediction(clientX);
+    }, { passive: false });
+
+    // 3. 手指放開：這時候才觸發掉落！
+    container.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        // 因為手指離開了，要抓「最後的位置」
+        if (e.changedTouches && e.changedTouches.length > 0) {
+            const clientX = e.changedTouches[0].clientX;
+            dropBall(clientX);
+        }
+    }, { passive: false });
+
+
+    // ==========================================
+    //       4. 核心功能 (已加入手機縮放修正)
+    // ==========================================
 
     function updatePrediction(clientX) {
         if (isGameOver || !canDrop) {
@@ -292,25 +334,38 @@
             hoverPreview.style.display = 'none';
             return;
         }
-        const rect = container.getBoundingClientRect();
-        let x = clientX - rect.left;
-        const r = LEVELS[currentPreviewLevel].radius;
-        x = Math.max(r, Math.min(x, width - r)); 
 
-        // 更新虛線位置
-        predictionLine.style.left = `${x}px`;
+        const rect = container.getBoundingClientRect();
+        // ★ 修正重點：計算目前畫面被縮小了多少倍
+        const scaleRatio = rect.width / width; 
+
+        // 把「滑鼠/手指座標」換算成「遊戲內的物理座標」
+        let visualX = clientX - rect.left;
+        let physicsX = visualX / scaleRatio;
+
+        const r = LEVELS[currentPreviewLevel].radius;
+        // 限制球不要跑出牆壁
+        physicsX = Math.max(r, Math.min(physicsX, width - r));
+
+        // 換算回「螢幕顯示座標」來畫虛線
+        const finalVisualX = physicsX * scaleRatio;
+
+        predictionLine.style.left = `${finalVisualX}px`;
         predictionLine.style.display = 'block';
 
-        // 更新預覽圖片的內容、大小與位置
+        // 設定預覽圖片
         hoverPreview.src = LEVELS[currentPreviewLevel].img;
-        hoverPreview.style.width = `${r * 2}px`;
-        hoverPreview.style.height = `${r * 2}px`;
-        hoverPreview.style.left = `${x}px`;
+        
+        // ★ 修正重點：預覽圖也要跟著縮小，不然手機上會看起來超大
+        const previewSize = (r * 2) * scaleRatio;
+        
+        hoverPreview.style.width = `${previewSize}px`;
+        hoverPreview.style.height = `${previewSize}px`;
+        
+        // 讓圖片中心點對齊你的手指
+        hoverPreview.style.left = `${finalVisualX - (previewSize/2)}px`; 
         hoverPreview.style.display = 'block';
     }
-
-    container.addEventListener('mousedown', (e) => dropBall(e.clientX));
-    container.addEventListener('touchstart', (e) => dropBall(e.touches[0].clientX));
 
     function dropBall(clientX) {
         if (isGameOver || !canDrop) return;
@@ -319,13 +374,37 @@
         hoverPreview.style.display = 'none';
 
         const rect = container.getBoundingClientRect();
-        let x = clientX - rect.left;
-        const r = LEVELS[currentPreviewLevel].radius;
-        x = Math.max(r, Math.min(x, width - r));
+        // ★ 修正重點：掉落時也要計算縮放比例
+        const scaleRatio = rect.width / width; 
 
-        // 計算圖片縮放比例：(半徑 * 2) / 原始圖片寬度
+        let visualX = clientX - rect.left;
+        let physicsX = visualX / scaleRatio; // 換算成物理座標
+
+        const r = LEVELS[currentPreviewLevel].radius;
+        physicsX = Math.max(r, Math.min(physicsX, width - r));
+
+        // 生成球體 (這裡使用修正後的 physicsX，位置才會準)
         const scale = (r * 2) / BASE_IMG_SIZE;
 
+        const newBall = Bodies.circle(physicsX, 50, r, {
+            restitution: 0.2, friction: 0.8, density: 0.001 * (currentPreviewLevel + 1),
+            render: { 
+                sprite: {
+                    texture: LEVELS[currentPreviewLevel].img,
+                    xScale: scale,
+                    yScale: scale
+                }
+            },
+            label: 'character'
+        });
+        newBall.level = currentPreviewLevel;
+        Composite.add(engine.world, newBall);
+
+        currentPreviewLevel = getNextLevel();
+        setTimeout(() => { 
+            canDrop = true; 
+        }, 800);
+    }
         // 建立新物理球體 (使用 Sprite 圖片渲染)
         const newBall = Bodies.circle(x, 50, r, {
             restitution: 0.2, friction: 0.8, density: 0.001 * (currentPreviewLevel + 1),
@@ -416,6 +495,7 @@
 </script>
 </body>
 </html>
+
 
 
 
