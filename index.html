@@ -206,14 +206,15 @@
 
         /* 7. 遊戲畫布 (設定順序為 3，在最下面) */
         #canvas-container {
-            order: 3; 
+            order: 3;
             
-            width: 90% !important; 
-            height: auto !important; 
-            aspect-ratio: 400 / 600;
+            /* 【核心修正】改用高度來控制大小，保證比例不變 */
+            height: 60vh !important; /* 固定高度為螢幕的 60% */
+            width: auto !important;  /* 寬度自動計算 */
+            aspect-ratio: 400 / 600; /* 嚴格遵守這個比例，球才不會變形 */
             
-            /* 稍微放寬高度限制，讓它看起來大方一點，但不會超出螢幕 */
-            max-height: 60vh; 
+            /* 加上最大寬度限制，避免在某些超寬螢幕手機上變得太大 */
+            max-width: 95%; 
             
             border-width: 8px;
             box-sizing: border-box;
@@ -518,6 +519,7 @@ function dropBall(targetX) {
 </script>
 </body>
 </html>
+
 
 
 
