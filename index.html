@@ -99,16 +99,61 @@
         #game-over-screen h1 { color: #ff4d4d; font-size: 36px; margin-bottom: 20px; }
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
 
-/* --- 手機版專用設定 (只在寬度小於 700px 時生效) --- */
-@media (max-width: 700px) {
-    
-    /* 1. 調整最外層容器：允許換行 */
-    #game-wrapper { 
+/* 修正進化圖鑑容器：讓圓圈底部對齊 (看起來像站在同一水平線上) */
+    #evolution-path { 
+        display: flex;          
+        order: 1;               
+        flex-direction: row;    
         flex-wrap: wrap;        
+        width: 100%;            
         justify-content: center; 
-        padding-top: 10px;      
-        padding-bottom: 50px;   
+        align-items: flex-end; /* ★關鍵：讓圓圈底部對齊 */
+        gap: 3px;               
+        margin-bottom: 10px;    
     }
+
+    /* 設定「由小變大」的階梯式大小 
+       我們用 :nth-child(n) 來分別指定第幾顆球的大小
+    */
+    
+    /* 先重置基本樣式 */
+    .evo-circle {
+        border-width: 1px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* 第 1 顆 (最小) */
+    .evo-circle:nth-child(1) { width: 20px !important; height: 20px !important; }
+    
+    /* 第 2 顆 */
+    .evo-circle:nth-child(2) { width: 23px !important; height: 23px !important; }
+    
+    /* 第 3 顆 */
+    .evo-circle:nth-child(3) { width: 26px !important; height: 26px !important; }
+    
+    /* 第 4 顆 */
+    .evo-circle:nth-child(4) { width: 29px !important; height: 29px !important; }
+    
+    /* 第 5 顆 */
+    .evo-circle:nth-child(5) { width: 32px !important; height: 32px !important; }
+    
+    /* 第 6 顆 */
+    .evo-circle:nth-child(6) { width: 35px !important; height: 35px !important; }
+    
+    /* 第 7 顆 */
+    .evo-circle:nth-child(7) { width: 38px !important; height: 38px !important; }
+    
+    /* 第 8 顆 */
+    .evo-circle:nth-child(8) { width: 41px !important; height: 41px !important; }
+    
+    /* 第 9 顆 */
+    .evo-circle:nth-child(9) { width: 44px !important; height: 44px !important; }
+    
+    /* 第 10 顆 */
+    .evo-circle:nth-child(10) { width: 47px !important; height: 47px !important; }
+
+    /* 第 11 顆 (最大 - 如果有的話) */
+    .evo-circle:nth-child(11) { width: 50px !important; height: 50px !important; }
 
     /* 2. 修正左側「進化圖鑑」：改成 flex (顯示) 並排在最上面 */
     #evolution-path { 
@@ -377,5 +422,6 @@
 </script>
 </body>
 </html>
+
 
 
