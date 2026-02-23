@@ -99,68 +99,55 @@
         #game-over-screen h1 { color: #ff4d4d; font-size: 36px; margin-bottom: 20px; }
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
 
-/* --- 手機版專用設定：強制維持「左-中-右」三欄佈局 --- */
+/* --- 手機版專用設定 (只在寬度小於 700px 時生效) --- */
 @media (max-width: 700px) {
     
-    /* 1. 最外層容器：禁止換行，強制橫向排列 */
+    /* 1. 調整最外層容器：允許換行 */
     #game-wrapper { 
-        flex-wrap: nowrap;      /* ★關鍵：禁止換行，維持左中右結構 */
-        justify-content: space-between; /* 平均分配空間 */
-        align-items: flex-start; /* 對齊頂部 */
-        width: 100%;
-        padding: 5px;           /* 減少邊距，爭取空間 */
-        gap: 2px;               /* 欄位間距縮到最小 */
+        flex-wrap: wrap;        
+        justify-content: center; 
+        padding-top: 10px;      
+        padding-bottom: 50px;   
     }
 
-    /* 2. 左側「進化圖鑑」：顯示並縮小 */
+    /* 2. 修正左側「進化圖鑑」：改成 flex (顯示) 並排在最上面 */
     #evolution-path { 
-        display: flex;          /* 把它叫出來！ */
-        flex-direction: column; /* 維持垂直排列 */
-        width: 15vw;            /* 寬度設為螢幕的 15% */
-        gap: 2px;               /* 圖案間距變小 */
-        margin: 0;
+        display: flex;          
+        order: 1;               /* 排在第 1 (最上面) */
+        flex-direction: row;    
+        flex-wrap: wrap;        
+        width: 100%;            
+        justify-content: center; 
+        gap: 5px;               
+        margin-bottom: 15px;    
     }
 
-    /* 針對手機極度縮小左側圖示 */
+    /* 3. 強制縮小進化圖示，不然手機會爆版 */
     .evo-circle {
-        width: 8vw !important;  /* 圖示跟隨螢幕縮放 */
-        height: 8vw !important;
-        min-width: 25px;        /* 設定最小限制以免糊掉 */
-        min-height: 25px;
+        width: 32px !important;  
+        height: 32px !important; 
         border-width: 1px;
     }
 
-    /* 3. 中間「遊戲畫布」：按比例縮小 */
+    /* 4. 遊戲畫布：排在中間 */
     #canvas-container {
-        width: 60vw;            /* 佔據螢幕 60% 寬度 */
-        height: auto;           /* 高度自動 */
-        aspect-ratio: 400 / 600;/* ★關鍵：強制維持 400x600 的長寬比 */
-        border-width: 5px;      /* 邊框變細 */
-        border-radius: 5px;
-        margin: 0;
+        order: 2;               
+        margin-bottom: 20px;
     }
 
-    /* 4. 右側「分數板」：縮小字體以塞入空間 */
+    /* 5. 修正右側「分數板」：排在最下面 */
     .sidebar:not(#evolution-path) {
-        width: 20vw;            /* 寬度設為螢幕的 20% */
-        gap: 5px;
-        margin: 0;
+        order: 3;               
+        flex-direction: row;    
+        width: 100%; 
+        justify-content: center; 
+        gap: 15px;
     }
 
-    /* 調整分數框框樣式 */
+    /* 讓兩個分數框各佔一半寬度 */
     .score-box {
-        width: 100%;
-        padding: 5px 2px;
-        border-width: 1px;
-    }
-
-    /* 縮小文字大小，避免撐開版面 */
-    .score-box h3 { 
-        font-size: 10px; 
-        margin-bottom: 2px; 
-    }
-    .score-box span { 
-        font-size: 12px; 
+        width: 40%;
+        min-width: 120px;
     }
 }
     </style>
@@ -390,4 +377,5 @@
 </script>
 </body>
 </html>
+
 
