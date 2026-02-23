@@ -268,14 +268,6 @@
         pixelRatio: window.devicePixelRatio || 1 
     }
 });
-
-// 2. 接著執行 render
-Render.run(render);
-
-// 3. 最後啟動 runner
-const runner = Runner.create();
-Runner.run(runner, engine);
-
     let score = 0; let highScore = localStorage.getItem('palaceHighScore') || 0;
     document.getElementById('high-score').innerText = highScore;
     let isGameOver = false; let gameOverTimer = 0; let currentPreviewLevel = 0; let canDrop = true;
@@ -431,6 +423,7 @@ Runner.run(runner, engine);
 </script>
 </body>
 </html>
+
 
 
 
