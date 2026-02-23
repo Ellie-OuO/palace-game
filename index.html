@@ -113,88 +113,81 @@
         margin-bottom: 10px;    
     }
 
-/* --- 手機版專用：終極空間優化版 (左-中-右 緊湊佈局) --- */
+/* --- 手機版專用：頂部分數、中間遊戲、底部圖鑑 --- */
 @media (max-width: 700px) {
     
-    /* 1. 最外層容器：禁止換行，左右撐開 */
+    /* 1. 外層容器：由上而下垂直排列 */
     #game-wrapper { 
-        flex-wrap: nowrap;              /* ★ 關鍵：禁止換行 */
-        justify-content: space-between; /* 左右側欄貼邊，中間留給遊戲 */
-        align-items: flex-start;        /* 對齊頂部 */
+        flex-direction: column;         
+        flex-wrap: nowrap;              
+        justify-content: flex-start;    
+        align-items: center;            
         width: 100%;
-        padding: 10px 2px;              /* 極小邊距 */
-        gap: 0;                         /* 消除間隙 */
+        padding: 5px;             
+        gap: 5px;                      
     }
 
-    /* 2. 左側「進化圖鑑」：垂直排列 + 階梯大小 */
+    /* 2. 頂部區塊：分數板 (並排) */
+    .sidebar:not(#evolution-path) {
+        order: 1;                       /* 排在第 1 */
+        flex-direction: row;            
+        width: 95%;                     /* 寬度拉寬 */
+        justify-content: space-between; 
+        gap: 10px;
+        margin-bottom: 5px;
+        height: auto;
+    }
+
+    .score-box {
+        width: 48%;                     
+        padding: 5px 0;                 
+        border-width: 1px;
+    }
+    .score-box h3 { font-size: 13px; margin-bottom: 2px; }
+    .score-box span { font-size: 18px; }
+
+    /* 3. 中間區塊：遊戲畫布 (最大化) */
+    #canvas-container {
+        order: 2;                       /* 排在第 2 */
+        width: 85vw;                    /* ★ 寬度佔螢幕 85%，非常清楚 */
+        height: auto;                   
+        aspect-ratio: 400 / 600;        
+        flex-shrink: 0;                 
+        border-width: 4px;              
+        border-radius: 8px;
+        margin: 0;                  
+    }
+
+    /* 4. 底部區塊：人物圖鑑 (橫向階梯排列) */
     #evolution-path { 
         display: flex;          
-        order: 1;               
-        flex-direction: column;         /* 垂直排列 */
-        width: 15vw;                    /* 設定固定寬度 (約 15%) */
-        align-items: center;            /* 置中對齊 */
-        gap: 4px;                       /* 圖案間距 */
-        margin: 0;
+        order: 3;                       /* 排在第 3 */
+        flex-direction: row;            
+        flex-wrap: wrap;                
+        width: 100%;                    
+        justify-content: center;        
+        align-items: flex-end;          /* 底部對齊，階梯感 */
+        gap: 3px;                       
+        margin-top: 5px;
     }
 
-    /* --- 左側圖示：階梯式大小設定 (由小變大) --- */
+    /* --- 人物圖示：階梯式大小 --- */
     .evo-circle {
         border-width: 1px;
-        margin: 0;
-        /* 基礎設定，具體大小由下方 nth-child 控制 */
+        margin-bottom: 2px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
-    .evo-circle:nth-child(1) { width: 18px !important; height: 18px !important; }
-    .evo-circle:nth-child(2) { width: 20px !important; height: 20px !important; }
-    .evo-circle:nth-child(3) { width: 22px !important; height: 22px !important; }
-    .evo-circle:nth-child(4) { width: 24px !important; height: 24px !important; }
-    .evo-circle:nth-child(5) { width: 26px !important; height: 26px !important; }
-    .evo-circle:nth-child(6) { width: 28px !important; height: 28px !important; }
-    .evo-circle:nth-child(7) { width: 30px !important; height: 30px !important; }
-    .evo-circle:nth-child(8) { width: 33px !important; height: 33px !important; }
-    .evo-circle:nth-child(9) { width: 36px !important; height: 36px !important; }
-    .evo-circle:nth-child(10){ width: 40px !important; height: 40px !important; } /* 最大不要超過 15vw */
-
-    /* 3. 中間「遊戲畫布」：給予最大空間 */
-    #canvas-container {
-        order: 2;
-        width: 70vw;            /* ★ 佔據螢幕 70% 寬度 */
-        height: auto;           
-        aspect-ratio: 400 / 600;/* 維持長寬比 */
-        flex-shrink: 0;         /* ★ 關鍵：絕對不准被壓縮！ */
-        border-width: 2px;      /* 邊框改細 */
-        border-radius: 5px;
-        margin: 0 1px;
-    }
-
-    /* 4. 右側「分數板」：垂直堆疊，極致省空間 */
-    .sidebar:not(#evolution-path) {
-        order: 3;               
-        flex-direction: column; /* ★ 垂直排列 (原本是 row 會並排) */
-        width: 15vw;            /* 設定固定寬度 (約 15%) */
-        gap: 5px;
-        margin: 0;
-        align-items: center;
-    }
-
-    /* 分數框框優化 */
-    .score-box {
-        width: 100%;            /* 填滿側欄 */
-        min-width: 0;           /* ★ 關鍵：移除最小寬度限制 (原本的 120px 害死人) */
-        padding: 3px 0;         /* 減少內距 */
-        border-width: 1px;
-    }
-
-    /* 文字縮小適應窄欄位 */
-    .score-box h3 { 
-        font-size: 10px;        
-        margin-bottom: 0; 
-        transform: scale(0.85); /* 再次縮小標題 */
-    }
-    .score-box span { 
-        font-size: 11px; 
-        display: block;         
-        line-height: 1.2;
-    }
+    /* 在底部橫排時，尺寸可以稍微大一點點 */
+    .evo-circle:nth-child(1) { width: 20px !important; height: 20px !important; }
+    .evo-circle:nth-child(2) { width: 23px !important; height: 23px !important; }
+    .evo-circle:nth-child(3) { width: 26px !important; height: 26px !important; }
+    .evo-circle:nth-child(4) { width: 29px !important; height: 29px !important; }
+    .evo-circle:nth-child(5) { width: 32px !important; height: 32px !important; }
+    .evo-circle:nth-child(6) { width: 35px !important; height: 35px !important; }
+    .evo-circle:nth-child(7) { width: 38px !important; height: 38px !important; }
+    .evo-circle:nth-child(8) { width: 41px !important; height: 41px !important; }
+    .evo-circle:nth-child(9) { width: 44px !important; height: 44px !important; }
+    .evo-circle:nth-child(10){ width: 47px !important; height: 47px !important; }
 }
     </style>
 </head>
@@ -423,6 +416,7 @@
 </script>
 </body>
 </html>
+
 
 
 
