@@ -337,31 +337,28 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
         if (isGameOver) return;
         
         const rect = container.getBoundingClientRect();
-        const scaleX = width / rect.width; // 修正手機縮放比例
+        const scaleX = width / rect.width; 
 
         let x;
         // 判斷是「玩家操作」還是「系統自動補位」
         if (inputX !== null && inputX !== undefined) {
             x = (inputX - rect.left) * scaleX;
         } else {
-            x = lastX; // 自動補位時，使用上次的位置
+            x = lastX; 
         }
 
         const r = LEVELS[currentPreviewLevel].radius;
-        // 限制 x 不得超出牆壁
         x = Math.max(r, Math.min(x, width - r));
-        
-        // 更新全域變數 lastX
         lastX = x; 
 
-        // 計算百分比位置 (確保響應式對齊)
         const percentX = (x / width) * 100;
         
-        // 更新虛線 (只有按住時才顯示)
+        // 更新虛線
         predictionLine.style.left = `${percentX}%`;
-        predictionLine.style.display = isPressing ? 'block' : 'none';
+        // 【修正】：只要有在移動就顯示虛線 (不用再判斷 isPressing，讓電腦版懸停也能看到)
+        predictionLine.style.display = 'block';
         
-        // 更新預覽球 (強制顯示)
+        // 更新預覽球
         hoverPreview.style.left = `${percentX}%`;
         hoverPreview.style.display = 'block';
         hoverPreview.src = LEVELS[currentPreviewLevel].img;
@@ -369,23 +366,27 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
         hoverPreview.style.height = 'auto'; 
     }
 
-    // --- 電腦版事件監聽 ---
-    container.addEventListener('mousedown', (e) => {
-        isPressing = true;
+    // --- 電腦版事件監聽 (修正為：滑動跟隨，點擊掉落) ---
+    
+    // 1. 滑鼠移動：直接更新位置，不需要按住
+    window.addEventListener('mousemove', (e) => {
+        // 為了避免干擾手機版，我們可以檢查一下是否為滑鼠事件
+        if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
         handleMove(e.clientX);
     });
     
-    // 電腦版：滑鼠移動時持續更新
-    window.addEventListener('mousemove', (e) => {
-        if (isPressing) handleMove(e.clientX);
-    });
-    
-    // 電腦版：滑鼠放開時掉落
-    window.addEventListener('mouseup', (e) => {
-        if (isPressing) {
-            isPressing = false;
+    // 2. 滑鼠點擊：觸發掉落
+    container.addEventListener('mouseup', (e) => {
+        // 確保是左鍵 (button 0)
+        if (e.button === 0) {
             dropBall(lastX);
         }
+    });
+    // 兼容部分點擊習慣
+    container.addEventListener('click', (e) => {
+        // 避免與 mouseup 重複觸發
+        // dropBall 內部有 canDrop 冷卻機制，重複呼叫也沒關係
+        dropBall(lastX);
     });
 
     // --- 手機版事件監聽 ---
@@ -514,6 +515,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
