@@ -291,90 +291,113 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
     });
 
     // --- 2. 核心機制：預覽與掉落 ---
-const predictionLine = document.getElementById('prediction-line');
-const hoverPreview = document.getElementById('hover-preview');
+    const predictionLine = document.getElementById('prediction-line');
+    const hoverPreview = document.getElementById('hover-preview'); // 取得預覽圖元素
 
-// 1. 先宣告變數
+    function getNextLevel() { return Math.floor(Math.random() * 5); }
+    currentPreviewLevel = getNextLevel();
+    lastX = width / 2; // 預設在中間
+    handleMove(lastX); // 讓第一顆球預先出現在中央
+
+    container.addEventListener('mousemove', (e) => updatePrediction(e.clientX));
+    container.addEventListener('touchmove', (e) => updatePrediction(e.touches[0].clientX));
+
+    function updatePrediction(clientX) {
+        if (isGameOver || !canDrop) {
+            predictionLine.style.display = 'none';
+            hoverPreview.style.display = 'none';
+            return;
+        }
+        const rect = container.getBoundingClientRect();
+        let x = clientX - rect.left;
+        const r = LEVELS[currentPreviewLevel].radius;
+        x = Math.max(r, Math.min(x, width - r)); 
+
+        // 更新虛線位置
+        predictionLine.style.left = `${x}px`;
+        predictionLine.style.display = 'block';
+
+        // 更新預覽圖片的內容、大小與位置
+        hoverPreview.src = LEVELS[currentPreviewLevel].img;
+        hoverPreview.style.width = `${r * 2}px`;
+        hoverPreview.style.height = `${r * 2}px`;
+        hoverPreview.style.left = `${x}px`;
+        hoverPreview.style.display = 'block';
+    }
+
+/* --- 從這裡開始替換 --- */
 let isPressing = false;
-let lastX = width / 2; // 預設中間
+let lastX = width / 2;
 
-function getNextLevel() { return Math.floor(Math.random() * 5); }
-
-// 2. 統一的移動處理：更新預覽位置並記錄座標
+// 統一的移動處理：更新預覽位置並記錄座標
 function handleMove(clientX) {
     if (isGameOver || !canDrop) return;
     const rect = container.getBoundingClientRect();
     
-    // 計算縮放比例補償
+    // --- 關鍵修正：計算縮放比例 ---
+    // 用邏輯寬度 (400) 除以 實際在網頁上顯示的寬度 (rect.width)
     const scaleX = width / rect.width;
     
-    // 支援直接傳入座標或使用最後記錄的座標
-    let currentX;
-    if (clientX !== undefined && clientX !== null) {
-        currentX = (clientX - rect.left) * scaleX;
-    } else {
-        currentX = lastX;
-    }
+    // 計算出正確的畫布內座標 x
+    let x = (clientX - rect.left) * scaleX;
     
     const r = LEVELS[currentPreviewLevel].radius;
-    currentX = Math.max(r, Math.min(currentX, width - r));
-    lastX = currentX; // 記錄最後正確的邏輯座標
+    // 限制 x 不得超出左右牆壁
+    x = Math.max(r, Math.min(x, width - r));
+    lastX = x; // 記錄最後正確的邏輯座標
 
-    // 使用百分比對應縮放後的寬度
-    const percentX = (currentX / width) * 100;
+    // 更新虛線與圖片位置 (這裡使用百分比能最精確對應縮放後的寬度)
+    const percentX = (x / width) * 100;
     
-    // 更新預覽線位置與顯示
     predictionLine.style.left = `${percentX}%`;
-    predictionLine.style.display = isPressing ? 'block' : 'none'; // 只有按住時顯示虛線
-
-    // 更新預覽圖片內容
-    hoverPreview.src = LEVELS[currentPreviewLevel].img;
-    hoverPreview.style.width = `${(r * 2 / width) * 100}%`;
-    hoverPreview.style.height = 'auto';
+    predictionLine.style.display = 'block';
+    
     hoverPreview.style.left = `${percentX}%`;
-    hoverPreview.style.display = 'block'; // 保持顯示下一顆球
+    hoverPreview.style.display = 'block';
+    hoverPreview.src = LEVELS[currentPreviewLevel].img;
+    
+    // 預覽圖的大小也要根據畫布縮放感來呈現
+    hoverPreview.style.width = `${(r * 2 / width) * 100}%`;
+    hoverPreview.style.height = 'auto'; 
 }
-
-// 3. 事件監聽 (移除舊的 updatePrediction)
+// 電腦版：按住、移動、放開
 container.addEventListener('mousedown', (e) => {
     isPressing = true;
     handleMove(e.clientX);
 });
-
 window.addEventListener('mousemove', (e) => {
     if (isPressing) handleMove(e.clientX);
 });
-
 window.addEventListener('mouseup', (e) => {
     if (isPressing) {
         isPressing = false;
-        dropBall(lastX);
+        dropBall(lastX); // 放開滑鼠才掉落
     }
 });
 
+// 手機版：按下、拖移、離開
 container.addEventListener('touchstart', (e) => {
     e.preventDefault(); 
     isPressing = true;
     handleMove(e.touches[0].clientX);
 }, { passive: false });
-
 container.addEventListener('touchmove', (e) => {
     e.preventDefault();
     if (isPressing) handleMove(e.touches[0].clientX);
 }, { passive: false });
-
 container.addEventListener('touchend', (e) => {
     if (isPressing) {
         isPressing = false;
-        dropBall(lastX);
+        dropBall(lastX); // 手指離開才掉落
     }
 });
 
-// 4. 定義 dropBall
+// 重新定義 dropBall 接收 targetX
 function dropBall(targetX) {
     if (isGameOver || !canDrop) return;
     canDrop = false;
 
+    // 掉落時，只隱藏預測線，讓預覽圖留在畫面上顯示下一顆
     predictionLine.style.display = 'none';
 
     const r = LEVELS[currentPreviewLevel].radius;
@@ -396,20 +419,16 @@ function dropBall(targetX) {
     newBall.level = currentPreviewLevel;
     Composite.add(engine.world, newBall);
 
+    // 取得下一顆球的等級
     currentPreviewLevel = getNextLevel();
     
     setTimeout(() => { 
         canDrop = true; 
-        handleMove(undefined); // 冷卻結束，自動補位下一顆
+        // 冷卻結束後，強制執行一次 handleMove
+        // 這樣下一顆球就會立刻出現在最後一次操作的位置
+        handleMove(lastX);
     }, 500); 
 }
-
-// 5. 初始化遊戲狀態
-currentPreviewLevel = getNextLevel();
-// 延遲執行 handleMove 確保容器已渲染
-setTimeout(() => {
-    handleMove(undefined);
-}, 100);
 
     // --- 3. 合成判定 ---
     Events.on(engine, 'collisionStart', (event) => {
@@ -478,8 +497,6 @@ setTimeout(() => {
 </script>
 </body>
 </html>
-
-
 
 
 
