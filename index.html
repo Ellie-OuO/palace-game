@@ -121,94 +121,99 @@
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
 
         @media (max-width: 700px) {
-    /* 1. 鎖定畫面與背景 */
-    html, body {
-        position: fixed;
-        overflow: hidden;
-        touch-action: none;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #2b1111, #4a1c1c) !important;
+        /* 1. 鎖定畫面與背景 */
+        html, body {
+            position: fixed;
+            overflow: hidden;
+            touch-action: none;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2b1111, #4a1c1c) !important;
+        }
+
+        /* 2. 佈局容器：增加頂部留白，避免被手機瀏海/狀態列擋住 */
+        #game-wrapper {
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 40px; /* 關鍵：讓出頂部空間 */
+            padding-bottom: 10px;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 3. 側邊欄 (進化圖與分數)：自動換行，防止內容消失 */
+        .sidebar {
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap; /* 關鍵：空間不足時自動調整 */
+            margin-bottom: 5px;
+            order: -1;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+
+        /* 4. 進化圖路徑：移除固定高度 */
+        #evolution-path {
+            display: flex;
+            gap: 3px;
+            padding: 5px;
+            height: auto; 
+            margin-bottom: 5px;
+        }
+
+        /* 5. 進化球：確保不會縮到不見 */
+        .evo-circle {
+            transform: none !important;
+            margin: 0 !important;
+            box-shadow: none;
+            flex-shrink: 0;
+            border-width: 1px;
+            background-size: cover;
+        }
+
+        /* 微調球的大小，讓它們能塞進一行 */
+        .evo-circle:nth-child(1)  { width: 16px !important; height: 16px !important; }
+        .evo-circle:nth-child(2)  { width: 18px !important; height: 18px !important; }
+        .evo-circle:nth-child(3)  { width: 20px !important; height: 20px !important; }
+        .evo-circle:nth-child(4)  { width: 22px !important; height: 22px !important; }
+        .evo-circle:nth-child(5)  { width: 25px !important; height: 25px !important; }
+        .evo-circle:nth-child(6)  { width: 28px !important; height: 28px !important; }
+        .evo-circle:nth-child(7)  { width: 31px !important; height: 31px !important; }
+        .evo-circle:nth-child(8)  { width: 34px !important; height: 34px !important; }
+        .evo-circle:nth-child(9)  { width: 37px !important; height: 37px !important; }
+        .evo-circle:nth-child(10) { width: 40px !important; height: 40px !important; }
+
+        /* 6. 分數框：自適應寬度 */
+        .score-box {
+            margin: 0 5px;
+            padding: 5px 10px;
+            width: auto;
+            min-width: 80px;
+            background: rgba(92, 58, 33, 0.95);
+            border: 1px solid #d4af37;
+        }
+        .score-box h3 { font-size: 10px; margin-bottom: 2px; }
+        .score-box span { font-size: 16px; font-weight: bold; }
+
+        /* 7. 遊戲畫布：【核心修正】以寬度為主，高度自動適應 */
+        #canvas-container {
+            width: 90% !important; /* 左右各留 5% 邊距，保證不跑版 */
+            height: auto !important; /* 讓高度自動計算，不要強制 70vh */
+            aspect-ratio: 400 / 600; /* 維持黃金比例 */
+            
+            max-height: 65vh; /* 限制最大高度，避免蓋住分數板 */
+            
+            border-width: 8px;
+            margin-top: 5px;
+            box-sizing: border-box; /* 確保邊框算在寬度內 */
+        }
+
+        /* 隱藏不必要的按鈕 */
+        .powerup-btn { display: none; }
     }
-
-    /* 2. 佈局容器：利用垂直空間 */
-    #game-wrapper {
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 5px 0;
-        width: 100vw;
-        height: 100vh;
-    }
-
-    /* 3. 側邊欄 (進化圖與分數)：置頂並橫排 */
-    .sidebar {
-        width: 100%;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 5px;
-        order: -1;
-        flex-shrink: 0;
-    }
-
-    /* 4. 進化圖路徑：撐滿寬度並等距排列 */
-    #evolution-path {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-evenly; /* 關鍵：讓球均勻分散，填滿左右空間 */
-        width: 100%;
-        padding: 0 5px;
-        height: 50px;
-    }
-
-    /* 5. 進化球：由小到大階梯式設定 (解決「一樣大」的問題) */
-    .evo-circle {
-        transform: none !important; /* 取消之前的縮放 */
-        margin: 0 !important;
-        box-shadow: none;
-        flex-shrink: 0;
-        border-width: 1px;
-    }
-
-    /* 手動設定 10 個等級的大小 (由 15px 遞增至 42px) */
-    .evo-circle:nth-child(1)  { width: 14px !important; height: 14px !important; }
-    .evo-circle:nth-child(2)  { width: 17px !important; height: 17px !important; }
-    .evo-circle:nth-child(3)  { width: 20px !important; height: 20px !important; }
-    .evo-circle:nth-child(4)  { width: 23px !important; height: 23px !important; }
-    .evo-circle:nth-child(5)  { width: 26px !important; height: 26px !important; }
-    .evo-circle:nth-child(6)  { width: 29px !important; height: 29px !important; }
-    .evo-circle:nth-child(7)  { width: 32px !important; height: 32px !important; }
-    .evo-circle:nth-child(8)  { width: 35px !important; height: 35px !important; }
-    .evo-circle:nth-child(9)  { width: 38px !important; height: 38px !important; }
-    .evo-circle:nth-child(10) { width: 41px !important; height: 41px !important; }
-
-    /* 6. 分數框：橫向並排縮小 */
-    .score-box {
-        margin: 0 4px;
-        padding: 2px 5px;
-        width: 75px; /* 固定寬度，以免擠到進化圖 */
-        background: rgba(92, 58, 33, 0.9);
-        border: 1px solid #d4af37;
-        flex-shrink: 0;
-    }
-    .score-box h3 { font-size: 9px; margin-bottom: 0; }
-    .score-box span { font-size: 13px; font-weight: bold; }
-
-    /* 7. 遊戲畫布：確保底部不被切掉 */
-    #canvas-container {
-        height: 70vh !important; /* 高度調降，預留更多底部空間 */
-        width: auto !important;
-        aspect-ratio: 400 / 600; /* 維持比例，球才不會變扁 */
-        max-width: 95%; 
-        border-width: 8px; /* 邊框稍微加厚一點增加美觀 */
-        margin-top: 5px;
-    }
-
-    /* 隱藏不必要的按鈕 */
-    .powerup-btn { display: none; }
-}
     </style>
 </head>
 <body>
@@ -504,6 +509,7 @@ function dropBall(targetX) {
 </script>
 </body>
 </html>
+
 
 
 
