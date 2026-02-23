@@ -43,7 +43,8 @@
 
         #canvas-container {
             position: relative;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 600px;
             background: linear-gradient(to bottom, #ffe8c3 0%, #f7d299 100%);
             border: 15px solid #5c3a21;
@@ -99,8 +100,28 @@
 
         @media (max-width: 700px) {
             #game-wrapper { flex-wrap: wrap; justify-content: center; }
-            .sidebar { flex-direction: row; width: 100%; justify-content: center; margin-bottom: 10px; }
-            #evolution-path { display: none; }
+            .sidebar { width: 100%;
+        flex-direction: row; /* 改成橫排 */
+        justify-content: center;
+        gap: 5px;
+        margin-bottom: 10px;
+        order: -1; /* 確保它排在最上面 */}
+            #evolution-path { display: flex; 
+        flex-wrap: wrap; /* 如果手機太窄，允許換行 */
+        padding: 0 10px;}
+        /* 手機版將進化圖示縮小，不然橫排會塞不下 11 個 */
+        .evo-circle {
+        width: 30px !important;  /* 強制覆蓋 JS 的設定 */
+        height: 30px !important; /* 強制覆蓋 JS 的設定 */
+        border-width: 1px;
+        }
+    
+        /* 調整分數版的位置 */
+        .score-box {
+        width: 45%; /* 兩個分數框各佔一半 */
+        margin: 0 5px;
+        }
+    }
         }
     </style>
 </head>
@@ -329,3 +350,4 @@
 </script>
 </body>
 </html>
+
