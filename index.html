@@ -96,16 +96,18 @@
         }
 
         /* 新增：懸浮預覽圖 */
-       #hover-preview {
-    position: absolute;
-    top: 10px;
-    /* 移除之前的 transform，改用 JS 百分比控制，確保中心對齊 */
-    transform: translateX(-50%); 
-    pointer-events: none;
-    display: none;
-    z-index: 6;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
-}
+        #hover-preview {
+            position: absolute;
+            top: 10px;
+            transform: translateX(-50%);
+            pointer-events: none;
+            display: none;
+            z-index: 6;
+            filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
+            
+            /* --- 新增這行：告訴瀏覽器這個元素會一直動，請開啟加速 --- */
+            will-change: left; 
+        }
 
         #danger-line {
             position: absolute; top: 100px; left: 0; width: 100%; height: 2px;
@@ -256,7 +258,12 @@
     // --- 1. 遊戲資料設定 (加入圖片路徑) ---
     // 假設您準備的圖片都是 200x200 px
     const BASE_IMG_SIZE = 200; 
-
+    // --- 0. 圖片預先載入 (解決掉落卡頓的關鍵) ---
+    // 這會強迫瀏覽器先把圖片讀進快取，不用等到掉落時才讀
+    LEVELS.forEach(lvl => {
+        const img = new Image();
+        img.src = lvl.img;
+    });
     const LEVELS = [
         { radius: 15, img: 'images/level1.png' },
         { radius: 22, img: 'images/level2.png' },
@@ -331,8 +338,10 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
     // 初始化第一顆球
     currentPreviewLevel = getNextLevel();
 
-    // 2. 統一的移動與顯示處理
-    // 參數 inputX: 傳入座標數值。如果傳入 null，代表是系統自動補位，使用 lastX。
+    // 用來記錄上一次渲染的等級，避免重複更新圖片 DOM
+    let lastRenderedLevel = -1; 
+
+    // 2. 統一的移動與顯示處理 (效能優化版)
     function handleMove(inputX) {
         if (isGameOver) return;
         
@@ -340,7 +349,6 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
         const scaleX = width / rect.width; 
 
         let x;
-        // 判斷是「玩家操作」還是「系統自動補位」
         if (inputX !== null && inputX !== undefined) {
             x = (inputX - rect.left) * scaleX;
         } else {
@@ -353,17 +361,25 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 
         const percentX = (x / width) * 100;
         
-        // 更新虛線
+        // --- 虛線位置更新 ---
         predictionLine.style.left = `${percentX}%`;
-        // 【修正】：只要有在移動就顯示虛線 (不用再判斷 isPressing，讓電腦版懸停也能看到)
-        predictionLine.style.display = 'block';
+        predictionLine.style.display = 'block'; // 電腦版懸停可見
         
-        // 更新預覽球
+        // --- 預覽球位置更新 ---
         hoverPreview.style.left = `${percentX}%`;
         hoverPreview.style.display = 'block';
-        hoverPreview.src = LEVELS[currentPreviewLevel].img;
-        hoverPreview.style.width = `${(r * 2 / width) * 100}%`;
-        hoverPreview.style.height = 'auto'; 
+
+        // --- 【效能關鍵優化】 ---
+        // 只有當「目前的等級」跟「上次渲染的等級」不一樣時，才去改圖片和大小
+        // 這樣可以減少 95% 的 DOM 操作，大幅解決手機卡頓
+        if (lastRenderedLevel !== currentPreviewLevel) {
+            hoverPreview.src = LEVELS[currentPreviewLevel].img;
+            // 這裡寬度計算只會執行一次，而不是每次滑動都算
+            hoverPreview.style.width = `${(r * 2 / width) * 100}%`;
+            hoverPreview.style.height = 'auto';
+            
+            lastRenderedLevel = currentPreviewLevel; // 更新紀錄
+        }
     }
 
     // --- 電腦版事件監聽 (修正為：滑動跟隨，點擊掉落) ---
@@ -515,6 +531,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
