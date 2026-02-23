@@ -100,24 +100,53 @@
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
 
         @media (max-width: 700px) {
-    #game-wrapper { flex-direction: column; align-items: center; }
+    /* 1. 核心容器：垂直排列 */
+    #game-wrapper { 
+        flex-direction: column; 
+        align-items: center; 
+        padding: 5px;
+    }
     
+    /* 2. 上排進化路徑：橫排且置中 */
     #evolution-path { 
         display: flex !important; 
-        flex-direction: row; /* 橫向排隊 */
-        order: -1;           /* 移至最上方 */
-        gap: 3px;            /* 間距 */
+        flex-direction: row; 
+        align-items: flex-end; /* 讓圓圈底部對齊，視覺上更有由小到大的感覺 */
+        justify-content: center;
+        order: -1; 
+        gap: 5px; 
+        width: 100%;
+        margin-bottom: 15px;
+        height: 50px; /* 固定高度，避免大頭像頂到邊緣 */
     }
 
+    /* 3. 重要：移除固定寬高，改用 max-width 確保比例 */
     .evo-circle { 
-        width: 25px !important; 
-        height: 25px !important; 
-        flex-shrink: 0;      /* 防止圓圈被擠扁 */
+        /* 移除 width: 25px !important */
+        max-width: 45px; /* 限制最大等級的大小，避免手機放不下 */
+        max-height: 45px;
+        flex-shrink: 1;  /* 允許縮小以適應螢幕 */
+        border-width: 1px;
     }
 
-    .sidebar { flex-direction: row; width: 100%; justify-content: space-around; }
+    /* 4. 分數欄優化：避免擠壓 */
+    .sidebar { 
+        flex-direction: row; 
+        width: 100%; 
+        justify-content: center; 
+        gap: 10px; /* 縮小間距 */
+        margin-top: 10px;
+    }
+
+    .score-box { 
+        flex: 1;          /* 平分空間 */
+        max-width: 140px; /* 限制最大寬度防止太散 */
+        padding: 5px;     /* 減少內距 */
+    }
+
+    .score-box h3 { font-size: 12px; } /* 縮小字體確保不換行 */
+    .score-box span { font-size: 16px; }
 }
-        }
     </style>
 </head>
 <body>
@@ -345,4 +374,5 @@
 </script>
 </body>
 </html>
+
 
