@@ -251,7 +251,11 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
         options: {
             width: width, height: height,
             wireframes: false, // 必須是 false 才能顯示圖片
-            background: 'transparent'
+            background: 'transparent',
+        
+        /* --- 修正處：解決手機掉落失真 --- */
+        pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+        precision: 'highp'
         }
     });
 
@@ -421,6 +425,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
