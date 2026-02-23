@@ -110,7 +110,7 @@
         }
 
         #danger-line {
-            position: absolute; top: 100px; left: 0; width: 100%; height: 2px;
+            position: absolute; top: 16.66%; left: 0; width: 100%; height: 2px;
             background-color: rgba(255, 0, 0, 0.5); border-top: 1px dashed red; pointer-events: none; z-index: 4;
         }
 
@@ -524,7 +524,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
         const bodies = Composite.allBodies(engine.world);
         for (let i = 0; i < bodies.length; i++) {
             const body = bodies[i];
-            if (body.label === 'character' && (body.position.y - body.circleRadius) < 100 && body.velocity.y < 0.5) {
+            if (body.label === 'character' && (body.position.y - body.circleRadius) < 100 && body.velocity.y < 3) {
                 isDanger = true; break;
             }
         }
@@ -547,42 +547,3 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
