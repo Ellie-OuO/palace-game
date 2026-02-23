@@ -267,16 +267,33 @@
     });
 
     // 遊戲結束判定
-    Events.on(engine, 'beforeUpdate', () => {
-        const bodies = Composite.allBodies(engine.world);
-        bodies.forEach(body => {
-            if (body.label === 'character' && body.position.y < 80 && body.velocity.y < 0.1 && !canDrop) {
-                isGameOver = true;
-                document.getElementById('final-score').innerText = score;
-                document.getElementById('game-over-screen').style.display = 'flex';
+Events.on(engine, 'beforeUpdate', () => {
+    if (isGameOver) return;
+    
+    let isDanger = false;
+    const bodies = Composite.allBodies(engine.world);
+    const DANGER_LINE_Y = 100; // 紅線位置
+
+    for (let i = 0; i < bodies.length; i++) {
+        const body = bodies[i];
+        if (body.label === 'character') {
+            // 關鍵修正：只有當球體「已經不在頂部生成區」且「向上堆疊超過紅線」時才判定
+            // 並且球體必須是相對靜止的（避免剛掉下去就被判輸）
+            if (body.position.y < DANGER_LINE_Y && body.position.y > 60 && Math.abs(body.velocity.y) < 0.2) {
+                isDanger = true;
+                break;
             }
-        });
-    });
+        }
+    }
+
+    if (isDanger) {
+        gameOverTimer += 1000 / 60;
+        if (gameOverTimer > 3000) triggerGameOver(); // 持續超過 3 秒才判輸
+    } else {
+        gameOverTimer = 0;
+    }
+});
 </script>
 </body>
 </html>
+
