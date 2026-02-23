@@ -108,13 +108,7 @@
         touch-action: none;     /* 禁止瀏覽器預設手勢 */
     }
        /* 2. 遊戲容器：改成垂直排列 (Column)，讓進化圖與分數在畫布上方 */
-    #game-wrapper {
-        flex-direction: row; /* 關鍵：從原本的 row 改成 column */
-        align-items: center;
-        padding-top: 5px;       /* 上方稍微留一點點空隙 */
-        width: 100%;
-        height: 100%;           /* 確保佔滿畫面 */
-    }
+    #game-wrapper { flex-wrap: wrap; justify-content: center; }
             #evolution-path { display: flex; 
         flex-wrap: wrap; /* 如果手機太窄，允許換行 */
         padding: 0 10px;}
@@ -374,6 +368,7 @@
 </script>
 </body>
 </html>
+
 
 
 
