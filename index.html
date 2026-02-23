@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>甄嬛傳合成遊戲 </title>
+    <title>甄嬛傳合成遊戲</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
         /* CSS Reset 與基礎設定 */
@@ -117,7 +117,7 @@
         #game-over-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: none; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 20;
+            justify-content: center; align-items: center; z-index: 100;
         }
         #game-over-screen h1 { color: #ff4d4d; font-size: 36px; margin-bottom: 20px; }
         #restart-btn { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d4af37; border: none; border-radius: 5px; font-weight: bold; }
@@ -423,12 +423,14 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 
     // --- 手機版事件監聽 ---
     container.addEventListener('touchstart', (e) => {
+        if (isGameOver) return;
         e.preventDefault(); 
         isPressing = true;
         handleMove(e.touches[0].clientX);
     }, { passive: false });
 
     container.addEventListener('touchmove', (e) => {
+        if (isGameOver) return;
         e.preventDefault();
         if (isPressing) handleMove(e.touches[0].clientX);
     }, { passive: false });
@@ -544,7 +546,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
             { title: "此局已了", text: "娘娘請回甘露寺" },
             { title: "娘娘今日辛勞", text: "甘露寺已備好" },
             { title: "就差一步", text: "仍得往甘露寺靜心" },
-            { title: "甘露寺冷氣已開", text: "，娘娘慢走" },
+            { title: "甘露寺冷氣已開", text: "娘娘慢走" },
             { title: "本宮今日體力不濟", text: "改日再戰" },
             { title: "輸贏都是過眼雲煙", text: "先歇息" },
             { title: "今日這步棋", text: "走得著實疲憊" }
@@ -564,6 +566,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
