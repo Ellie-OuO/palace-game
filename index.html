@@ -113,56 +113,87 @@
         margin-bottom: 10px;    
     }
 
-/* --- 手機版專用設定：強制維持「左-中-右」三欄佈局 --- */
+/* --- 手機版專用：終極空間優化版 (左-中-右 緊湊佈局) --- */
 @media (max-width: 700px) {
     
-    /* 1. 最外層容器：禁止換行，強制橫向排列 */
+    /* 1. 最外層容器：禁止換行，左右撐開 */
     #game-wrapper { 
-        flex-wrap: nowrap;      /* ★關鍵：禁止換行，維持左中右結構 */
-        justify-content: space-between; /* 平均分配空間 */
-        align-items: flex-start; /* 對齊頂部 */
+        flex-wrap: nowrap;              /* ★ 關鍵：禁止換行 */
+        justify-content: space-between; /* 左右側欄貼邊，中間留給遊戲 */
+        align-items: flex-start;        /* 對齊頂部 */
         width: 100%;
-        padding: 5px;           /* 減少邊距，爭取空間 */
-        gap: 2px;               /* 欄位間距縮到最小 */
-    }
-    /* 2. 修正左側「進化圖鑑」：改成 flex (顯示) 並排在最上面 */
-    #evolution-path { 
-        display: flex;          
-        order: 1;               /* 排在第 1 (最上面) */
-        flex-direction: row;    
-        flex-wrap: wrap;        
-        width: 100%;            
-        justify-content: center; 
-        gap: 5px;               
-        margin-bottom: 15px;    
+        padding: 10px 2px;              /* 極小邊距 */
+        gap: 0;                         /* 消除間隙 */
     }
 
-    /* 3. 強制縮小進化圖示，不然手機會爆版 */
+    /* 2. 左側「進化圖鑑」：垂直排列 + 階梯大小 */
+    #evolution-path { 
+        display: flex;          
+        order: 1;               
+        flex-direction: column;         /* 垂直排列 */
+        width: 15vw;                    /* 設定固定寬度 (約 15%) */
+        align-items: center;            /* 置中對齊 */
+        gap: 4px;                       /* 圖案間距 */
+        margin: 0;
+    }
+
+    /* --- 左側圖示：階梯式大小設定 (由小變大) --- */
     .evo-circle {
-        width: 32px !important;  
-        height: 32px !important; 
+        border-width: 1px;
+        margin: 0;
+        /* 基礎設定，具體大小由下方 nth-child 控制 */
+    }
+    .evo-circle:nth-child(1) { width: 18px !important; height: 18px !important; }
+    .evo-circle:nth-child(2) { width: 20px !important; height: 20px !important; }
+    .evo-circle:nth-child(3) { width: 22px !important; height: 22px !important; }
+    .evo-circle:nth-child(4) { width: 24px !important; height: 24px !important; }
+    .evo-circle:nth-child(5) { width: 26px !important; height: 26px !important; }
+    .evo-circle:nth-child(6) { width: 28px !important; height: 28px !important; }
+    .evo-circle:nth-child(7) { width: 30px !important; height: 30px !important; }
+    .evo-circle:nth-child(8) { width: 33px !important; height: 33px !important; }
+    .evo-circle:nth-child(9) { width: 36px !important; height: 36px !important; }
+    .evo-circle:nth-child(10){ width: 40px !important; height: 40px !important; } /* 最大不要超過 15vw */
+
+    /* 3. 中間「遊戲畫布」：給予最大空間 */
+    #canvas-container {
+        order: 2;
+        width: 70vw;            /* ★ 佔據螢幕 70% 寬度 */
+        height: auto;           
+        aspect-ratio: 400 / 600;/* 維持長寬比 */
+        flex-shrink: 0;         /* ★ 關鍵：絕對不准被壓縮！ */
+        border-width: 2px;      /* 邊框改細 */
+        border-radius: 5px;
+        margin: 0 1px;
+    }
+
+    /* 4. 右側「分數板」：垂直堆疊，極致省空間 */
+    .sidebar:not(#evolution-path) {
+        order: 3;               
+        flex-direction: column; /* ★ 垂直排列 (原本是 row 會並排) */
+        width: 15vw;            /* 設定固定寬度 (約 15%) */
+        gap: 5px;
+        margin: 0;
+        align-items: center;
+    }
+
+    /* 分數框框優化 */
+    .score-box {
+        width: 100%;            /* 填滿側欄 */
+        min-width: 0;           /* ★ 關鍵：移除最小寬度限制 (原本的 120px 害死人) */
+        padding: 3px 0;         /* 減少內距 */
         border-width: 1px;
     }
 
-    /* 4. 遊戲畫布：排在中間 */
-    #canvas-container {
-        order: 2;               
-        margin-bottom: 20px;
+    /* 文字縮小適應窄欄位 */
+    .score-box h3 { 
+        font-size: 10px;        
+        margin-bottom: 0; 
+        transform: scale(0.85); /* 再次縮小標題 */
     }
-
-    /* 5. 修正右側「分數板」：排在最下面 */
-    .sidebar:not(#evolution-path) {
-        order: 3;               
-        flex-direction: row;    
-        width: 100%; 
-        justify-content: center; 
-        gap: 15px;
-    }
-
-    /* 讓兩個分數框各佔一半寬度 */
-    .score-box {
-        width: 40%;
-        min-width: 120px;
+    .score-box span { 
+        font-size: 11px; 
+        display: block;         
+        line-height: 1.2;
     }
 }
     </style>
@@ -392,6 +423,7 @@
 </script>
 </body>
 </html>
+
 
 
 
