@@ -117,19 +117,25 @@
         gap: 3px; 
         width: 100%;
         margin-bottom: 20px;
-        flex-wrap: nowrap; /* 強制不換行 */
+        height: 60px 
     }
 
-    /* 3. 人物頭像：移除固定寬高，改用比例縮放 */
-    .evo-circle { 
-        /* 移除原本的 width: 25px !important */
-        width: clamp(15px, 6vw, 40px) !important; /* 根據螢幕寬度自動縮放 */
-        height: auto !important; /* 高度自動 */
-        aspect-ratio: 1 / 1;    /* 強制維持正圓，解決橢圓問題 */
-        flex-shrink: 1;         /* 空間不足時允許等比縮小 */
-        border-width: 1px;
+    /* 手機版圖示：階梯式大小 */
+        .evo-circle {
+            border-width: 1px;
+            margin-bottom: 2px;
+        }
+        .evo-circle:nth-child(1) { width: 20px !important; height: 20px !important; }
+        .evo-circle:nth-child(2) { width: 23px !important; height: 23px !important; }
+        .evo-circle:nth-child(3) { width: 26px !important; height: 26px !important; }
+        .evo-circle:nth-child(4) { width: 29px !important; height: 29px !important; }
+        .evo-circle:nth-child(5) { width: 32px !important; height: 32px !important; }
+        .evo-circle:nth-child(6) { width: 35px !important; height: 35px !important; }
+        .evo-circle:nth-child(7) { width: 38px !important; height: 38px !important; }
+        .evo-circle:nth-child(8) { width: 41px !important; height: 41px !important; }
+        .evo-circle:nth-child(9) { width: 44px !important; height: 44px !important; }
+        .evo-circle:nth-child(10){ width: 47px !important; height: 47px !important; }
     }
-
     /* 4. 分數框：確保不被擠壓且完整顯示 */
     .sidebar { 
         display: flex !important;
@@ -377,6 +383,7 @@
 </script>
 </body>
 </html>
+
 
 
 
