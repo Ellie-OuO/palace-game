@@ -112,49 +112,18 @@
         margin-bottom: 10px;    
     }
 
-    /* 設定「由小變大」的階梯式大小 
-       我們用 :nth-child(n) 來分別指定第幾顆球的大小
-    */
+/* --- 手機版專用設定：強制維持「左-中-右」三欄佈局 --- */
+@media (max-width: 700px) {
     
-    /* 先重置基本樣式 */
-    .evo-circle {
-        border-width: 1px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    /* 1. 最外層容器：禁止換行，強制橫向排列 */
+    #game-wrapper { 
+        flex-wrap: nowrap;      /* ★關鍵：禁止換行，維持左中右結構 */
+        justify-content: space-between; /* 平均分配空間 */
+        align-items: flex-start; /* 對齊頂部 */
+        width: 100%;
+        padding: 5px;           /* 減少邊距，爭取空間 */
+        gap: 2px;               /* 欄位間距縮到最小 */
     }
-
-    /* 第 1 顆 (最小) */
-    .evo-circle:nth-child(1) { width: 20px !important; height: 20px !important; }
-    
-    /* 第 2 顆 */
-    .evo-circle:nth-child(2) { width: 23px !important; height: 23px !important; }
-    
-    /* 第 3 顆 */
-    .evo-circle:nth-child(3) { width: 26px !important; height: 26px !important; }
-    
-    /* 第 4 顆 */
-    .evo-circle:nth-child(4) { width: 29px !important; height: 29px !important; }
-    
-    /* 第 5 顆 */
-    .evo-circle:nth-child(5) { width: 32px !important; height: 32px !important; }
-    
-    /* 第 6 顆 */
-    .evo-circle:nth-child(6) { width: 35px !important; height: 35px !important; }
-    
-    /* 第 7 顆 */
-    .evo-circle:nth-child(7) { width: 38px !important; height: 38px !important; }
-    
-    /* 第 8 顆 */
-    .evo-circle:nth-child(8) { width: 41px !important; height: 41px !important; }
-    
-    /* 第 9 顆 */
-    .evo-circle:nth-child(9) { width: 44px !important; height: 44px !important; }
-    
-    /* 第 10 顆 */
-    .evo-circle:nth-child(10) { width: 47px !important; height: 47px !important; }
-
-    /* 第 11 顆 (最大 - 如果有的話) */
-    .evo-circle:nth-child(11) { width: 50px !important; height: 50px !important; }
-
     /* 2. 修正左側「進化圖鑑」：改成 flex (顯示) 並排在最上面 */
     #evolution-path { 
         display: flex;          
@@ -422,6 +391,7 @@
 </script>
 </body>
 </html>
+
 
 
 
