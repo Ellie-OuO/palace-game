@@ -256,8 +256,25 @@
     Composite.add(engine.world, [ground, leftWall, rightWall]);
 
     Render.run(render);
-    const runner = Runner.create();
-    Runner.run(runner, engine);
+    const render = Render.create({
+    element: container,
+    engine: engine,
+    options: {
+        width: width,
+        height: height,
+        wireframes: false, // 必須是 false 才能顯示圖片
+        background: 'transparent',
+        // 自動偵測解析度，電腦通常是 1，手機是 2~3，這會解決模糊問題
+        pixelRatio: window.devicePixelRatio || 1 
+    }
+});
+
+// 2. 接著執行 render
+Render.run(render);
+
+// 3. 最後啟動 runner
+const runner = Runner.create();
+Runner.run(runner, engine);
 
     let score = 0; let highScore = localStorage.getItem('palaceHighScore') || 0;
     document.getElementById('high-score').innerText = highScore;
@@ -414,6 +431,7 @@
 </script>
 </body>
 </html>
+
 
 
 
