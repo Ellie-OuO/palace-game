@@ -320,44 +320,94 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
         hoverPreview.style.display = 'block';
     }
 
-    container.addEventListener('mousedown', (e) => dropBall(e.clientX));
-    container.addEventListener('touchstart', (e) => dropBall(e.touches[0].clientX));
+/* --- 從這裡開始替換 --- */
+let isPressing = false;
+let lastX = width / 2;
 
-    function dropBall(clientX) {
-        if (isGameOver || !canDrop) return;
-        canDrop = false;
-        predictionLine.style.display = 'none';
-        hoverPreview.style.display = 'none';
+// 統一的移動處理：更新預覽位置並記錄座標
+function handleMove(clientX) {
+    if (isGameOver || !canDrop) return;
+    const rect = container.getBoundingClientRect();
+    let x = clientX - rect.left;
+    const r = LEVELS[currentPreviewLevel].radius;
+    x = Math.max(r, Math.min(x, width - r));
+    lastX = x; // 關鍵：記錄最後移動到的位置
 
-        const rect = container.getBoundingClientRect();
-        let x = clientX - rect.left;
-        const r = LEVELS[currentPreviewLevel].radius;
-        x = Math.max(r, Math.min(x, width - r));
+    predictionLine.style.left = `${x}px`;
+    predictionLine.style.display = 'block';
+    hoverPreview.style.left = `${x}px`;
+    hoverPreview.style.display = 'block';
+    hoverPreview.src = LEVELS[currentPreviewLevel].img;
+    hoverPreview.style.width = `${r * 2}px`;
+    hoverPreview.style.height = `${r * 2}px`;
+}
 
-        // 計算圖片縮放比例：(半徑 * 2) / 原始圖片寬度
-        const scale = (r * 2) / BASE_IMG_SIZE;
+// 電腦版：按住、移動、放開
+container.addEventListener('mousedown', (e) => {
+    isPressing = true;
+    handleMove(e.clientX);
+});
+window.addEventListener('mousemove', (e) => {
+    if (isPressing) handleMove(e.clientX);
+});
+window.addEventListener('mouseup', (e) => {
+    if (isPressing) {
+        isPressing = false;
+        dropBall(lastX); // 放開滑鼠才掉落
+    }
+});
 
-        // 建立新物理球體 (使用 Sprite 圖片渲染)
-        const newBall = Bodies.circle(x, 50, r, {
-            restitution: 0.2, friction: 0.8, density: 0.001 * (currentPreviewLevel + 1),
-            render: { 
-                sprite: {
-                    texture: LEVELS[currentPreviewLevel].img,
-                    xScale: scale,
-                    yScale: scale
-                }
-            },
-            label: 'character'
-        });
-        newBall.level = currentPreviewLevel;
-        Composite.add(engine.world, newBall);
+// 手機版：按下、拖移、離開
+container.addEventListener('touchstart', (e) => {
+    e.preventDefault(); 
+    isPressing = true;
+    handleMove(e.touches[0].clientX);
+}, { passive: false });
+container.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (isPressing) handleMove(e.touches[0].clientX);
+}, { passive: false });
+container.addEventListener('touchend', (e) => {
+    if (isPressing) {
+        isPressing = false;
+        dropBall(lastX); // 手指離開才掉落
+    }
+});
 
-        currentPreviewLevel = getNextLevel();
-        setTimeout(() => { 
-            canDrop = true; 
-            // 如果滑鼠還在畫面上，強制觸發一次更新以顯示下一顆球
-            updatePrediction(clientX); 
-        }, 800);
+// 重新定義 dropBall 接收 targetX
+function dropBall(targetX) {
+    if (isGameOver || !canDrop) return;
+    canDrop = false;
+
+    predictionLine.style.display = 'none';
+    hoverPreview.style.display = 'none';
+
+    const r = LEVELS[currentPreviewLevel].radius;
+    const scale = (r * 2) / BASE_IMG_SIZE;
+
+    const newBall = Bodies.circle(targetX, 50, r, {
+        restitution: 0.2, 
+        friction: 0.8, 
+        density: 0.001 * (currentPreviewLevel + 1),
+        render: { 
+            sprite: {
+                texture: LEVELS[currentPreviewLevel].img,
+                xScale: scale,
+                yScale: scale
+            }
+        },
+        label: 'character'
+    });
+    newBall.level = currentPreviewLevel;
+    Composite.add(engine.world, newBall);
+
+    currentPreviewLevel = getNextLevel();
+    
+    setTimeout(() => { 
+        canDrop = true; 
+        if (isPressing) handleMove(lastX);
+    }, 500); 
+}
     }
 
     // --- 3. 合成判定 ---
@@ -427,6 +477,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
