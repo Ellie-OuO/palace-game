@@ -133,15 +133,15 @@
             background: linear-gradient(135deg, #2b1111, #4a1c1c) !important;
         }
 
-        /* 2. 佈局容器：【核心修正】加大頂部留白，讓畫面整體下移 */
+        /* 2. 佈局容器：【微調】減少頂部留白，收緊版面 */
         #game-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             
-            /* 將畫面往下推 80px，解決「上方太擠、下方太原本空」的問題 */
-            padding-top: 80px; 
+            /* 從 80px 改為 50px，減少上方空白 */
+            padding-top: 50px; 
             padding-bottom: 0;
             width: 100%;
             height: 100%;
@@ -160,16 +160,16 @@
             margin: 0;
         }
 
-        /* 4. 進化圖 (設定順序為 1，在最上面) */
+        /* 4. 進化圖 (Order 1) */
         #evolution-path {
             order: 1; 
-            gap: 5px;
-            padding: 5px;
+            gap: 4px; /* 間距稍微縮小，讓放大的球塞得下 */
+            padding: 2px 5px;
             height: auto;
-            margin-bottom: 5px; /* 與分數框保持一點距離 */
+            margin-bottom: 2px; /* 收緊與分數框的距離 */
         }
 
-        /* 5. 進化球大小設定 */
+        /* 5. 進化球大小：【放大 25%】 */
         .evo-circle {
             transform: none !important;
             margin: 0 !important;
@@ -178,21 +178,22 @@
             border-width: 1px;
             background-size: cover;
         }
-        .evo-circle:nth-child(1)  { width: 16px !important; height: 16px !important; }
-        .evo-circle:nth-child(2)  { width: 18px !important; height: 18px !important; }
-        .evo-circle:nth-child(3)  { width: 20px !important; height: 20px !important; }
-        .evo-circle:nth-child(4)  { width: 22px !important; height: 22px !important; }
-        .evo-circle:nth-child(5)  { width: 25px !important; height: 25px !important; }
-        .evo-circle:nth-child(6)  { width: 28px !important; height: 28px !important; }
-        .evo-circle:nth-child(7)  { width: 31px !important; height: 31px !important; }
-        .evo-circle:nth-child(8)  { width: 34px !important; height: 34px !important; }
-        .evo-circle:nth-child(9)  { width: 37px !important; height: 37px !important; }
-        .evo-circle:nth-child(10) { width: 40px !important; height: 40px !important; }
+        /* 數值已重新計算，約為原本的 1.25 倍 */
+        .evo-circle:nth-child(1)  { width: 20px !important; height: 20px !important; }
+        .evo-circle:nth-child(2)  { width: 22px !important; height: 22px !important; }
+        .evo-circle:nth-child(3)  { width: 25px !important; height: 25px !important; }
+        .evo-circle:nth-child(4)  { width: 28px !important; height: 28px !important; }
+        .evo-circle:nth-child(5)  { width: 31px !important; height: 31px !important; }
+        .evo-circle:nth-child(6)  { width: 35px !important; height: 35px !important; }
+        .evo-circle:nth-child(7)  { width: 39px !important; height: 39px !important; }
+        .evo-circle:nth-child(8)  { width: 42px !important; height: 42px !important; }
+        .evo-circle:nth-child(9)  { width: 46px !important; height: 46px !important; }
+        .evo-circle:nth-child(10) { width: 50px !important; height: 50px !important; }
 
-        /* 6. 分數框 (【修正】抓取最後一個 sidebar，設定順序為 2) */
+        /* 6. 分數框 (Order 2) - 保持原樣 */
         .sidebar:last-child {
              order: 2; 
-             margin-bottom: 10px; /* 與遊戲畫布保持距離 */
+             margin-bottom: 5px; /* 收緊與遊戲畫布的距離 */
         }
 
         .score-box {
@@ -206,16 +207,17 @@
         .score-box h3 { font-size: 11px; margin-bottom: 2px; }
         .score-box span { font-size: 18px; font-weight: bold; }
 
-        /* 7. 遊戲畫布 (設定順序為 3，在最下面) */
+        /* 7. 遊戲畫布 (Order 3) */
         #canvas-container {
-            order: 3;
+            order: 3; 
             
-            /* 【核心修正】改用高度來控制大小，保證比例不變 */
-            height: 60vh !important; /* 固定高度為螢幕的 60% */
-            width: auto !important;  /* 寬度自動計算 */
-            aspect-ratio: 400 / 600; /* 嚴格遵守這個比例，球才不會變形 */
+            /* 【微調】高度稍微加高到 65vh */
+            height: 65vh !important; 
+            width: auto !important; 
             
-            /* 加上最大寬度限制，避免在某些超寬螢幕手機上變得太大 */
+            /* 依然嚴格遵守比例，球體不變形 */
+            aspect-ratio: 400 / 600; 
+            
             max-width: 95%; 
             
             border-width: 8px;
@@ -532,6 +534,7 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
 </script>
 </body>
 </html>
+
 
 
 
