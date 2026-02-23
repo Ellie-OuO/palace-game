@@ -118,10 +118,25 @@
     
         /* 調整分數版的位置 */
         .score-box {
-        width: 45%; /* 兩個分數框各佔一半 */
-        margin: 0 5px;
-        }
+        margin: 0 2px;
+        padding: 2px 4px;   /* 上下內距改為 2px (原本是 10px)，大幅壓扁高度 */
+        flex: 1;            /* 維持橫向佔滿空間 */
+        border-width: 1px;  /* 邊框改細 */
     }
+
+    /* 新增：強制縮小「目前積分/歷史最高」這幾個字 */
+    .score-box h3 {
+        font-size: 10px !important; /* 強制改為極小字體 (原本約 14px) */
+        margin-bottom: 0px;         /* 移除標題跟數字之間的空隙 */
+        line-height: 1.2;           /* 讓行距更緊湊 */
+    }
+
+    /* 新增：強制縮小「數字」 */
+    .score-box span {
+        font-size: 14px !important; /* 數字縮小 (原本 20px) */
+        line-height: 1.2;
+    }
+}
         }
     </style>
 </head>
@@ -350,4 +365,5 @@
 </script>
 </body>
 </html>
+
 
