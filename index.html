@@ -63,9 +63,23 @@
     image-rendering: auto;
 }
 
-        .score-box { text-align: center; background: rgba(92, 58, 33, 0.8); padding: 10px; border-radius: 8px; border: 1px solid #d4af37; width: 100%; }
-        .score-box h3 { font-size: 14px; margin-bottom: 5px; color: #fce2b1; }
-        .score-box span { font-size: 20px; font-weight: bold; color: #fff; }
+        .score-box {margin: 0 4px;
+        padding: 5px 10px; /* 增加內距 */
+        width: auto; /* 讓寬度自適應內容，不要定死 75px */
+        min-width: 80px; /* 設定最小寬度 */
+        background: rgba(92, 58, 33, 0.95); /* 加深背景不透明度 */
+        border: 1px solid #d4af37;
+        flex-shrink: 0;
+        /* 確保文字垂直排列 */
+        display: flex;
+        flex-direction: column; 
+        justify-content: center;}
+        .score-box h3 {font-size: 11px; /* 字體稍微放大 */
+        margin-bottom: 2px; 
+        line-height: 1.2}
+        .score-box span {font-size: 16px; 
+        font-weight: bold; 
+        line-height: 1.2}
 
         .powerup-btn {
             background: linear-gradient(180deg, #d4af37, #b8860b);
@@ -490,6 +504,7 @@ function dropBall(targetX) {
 </script>
 </body>
 </html>
+
 
 
 
