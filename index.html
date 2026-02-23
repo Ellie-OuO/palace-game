@@ -253,8 +253,8 @@
         
         <div id="danger-line"></div>
         <div id="game-over-screen">
-            <h1>此局已了</h1>
-            <h1>娘娘請回甘露寺</h1>
+            <h1 id="game-over-title">此局已了</h1>
+            <h1 id="random-msg">娘娘請回甘露寺</h1>
             <p style="margin-bottom: 20px;">最終積分: <span id="final-score">0</span></p>
             <button id="restart-btn" onclick="location.reload()">重新挑戰</button>
         </div>
@@ -540,10 +540,28 @@ const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bo
     }
 
     function triggerGameOver() {
-        isGameOver = true; document.getElementById('final-score').innerText = score; document.getElementById('game-over-screen').style.display = 'flex';
+        const GAME_OVER_MESSAGES = [
+            { title: "此局已了", text: "娘娘請回甘露寺" },
+            { title: "娘娘今日辛勞", text: "甘露寺已備好" },
+            { title: "就差一步", text: "仍得往甘露寺靜心" },
+            { title: "甘露寺冷氣已開", text: "，娘娘慢走" },
+            { title: "本宮今日體力不濟", text: "改日再戰" },
+            { title: "輸贏都是過眼雲煙", text: "先歇息" },
+            { title: "今日這步棋", text: "走得著實疲憊" }
+        ];
+        
+        isGameOver = true; document.getElementById('final-score').innerText = score;
+        // 隨機選取一個物件
+        const randomPair = GAME_OVER_MESSAGES[Math.floor(Math.random() * GAME_OVER_MESSAGES.length)];
+        
+        // 分別填入大標與副標
+        document.getElementById('game-over-title').innerText = randomPair.title;
+        document.getElementById('random-msg').innerText = randomPair.text;
+        document.getElementById('game-over-screen').style.display = 'flex';
     }
 
     <!-- function usePowerup(type) { if (isGameOver) return; alert(`【${type}】道具已觸發！`); } -->
 </script>
 </body>
 </html>
+
